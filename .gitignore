@@ -6,9 +6,9 @@ lark-doc-readonly-auth.png
 !.env.example
 tmp/
 *.log
+design/runtime-*.png
 
 # Common local files
 node_modules/
 .DS_Store
 Thumbs.db
-

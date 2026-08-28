@@ -1,4 +1,12 @@
 const { useEffect, useMemo, useRef, useState } = React;
+const {
+  COMMUNITY_STORIES,
+  COMMUNITY_PEOPLE,
+  DiscoverScreen,
+  StoryDetailScreen,
+  GardenScreen,
+  ShareCardScreen
+} = window.MulanCommunity;
 
 const TOPICS = {
   craft: {
@@ -169,7 +177,10 @@ function Icon({ name, size = 20, strokeWidth = 1.8 }) {
     spark: <><path d="m12 3 1.2 4.8L18 9l-4.8 1.2L12 15l-1.2-4.8L6 9l4.8-1.2Z" /><path d="m18 15 .7 2.3L21 18l-2.3.7L18 21l-.7-2.3L15 18l2.3-.7Z" /></>,
     leaf: <><path d="M20 4C12 4 5 9 5 16c0 2 1 4 3 5 0-6 4-10 10-13-5 4-8 8-8 13" /></>,
     share: <><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4" /></>,
-    reset: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></>
+    reset: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></>,
+    story: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z" /><path d="M4 5.5v15M8 7h8M8 11h7" /></>,
+    garden: <><path d="M12 21V10" /><path d="M12 14c-4 0-7-2.5-7-6 4 0 7 2.5 7 6ZM12 11c4 0 7-2.5 7-6-4 0-7 2.5-7 6Z" /><path d="M5 21h14" /></>,
+    save: <><path d="M12 3v12M7 10l5 5 5-5" /><path d="M5 19h14" /></>
   };
   return <svg {...common}>{paths[name] || paths.spark}</svg>;
 }
@@ -233,7 +244,7 @@ function HomeScreen({ selected, setSelected, onStart, palette, glow, motion }) {
           <path d="M20 32C7 27 8 12 20 5c12 7 13 22 0 27Z" fill={palette[2]} stroke={palette[0]} />
           <path d="M20 31V13" stroke={palette[0]} strokeWidth="1.8" />
         </svg>
-        <span>原来我会</span>
+        <span>雁过有声</span>
       </div>
       <div className="home-copy">
         <h2>发现你的<br />木兰时刻</h2>
@@ -468,7 +479,7 @@ function RevealScreen({ topic, palette, glow, motion }) {
   );
 }
 
-function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onBack, showToast }) {
+function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -516,7 +527,8 @@ function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onBac
         {audioUrl && <audio ref={audioRef} src={audioUrl} onEnded={() => setPlaying(false)}></audio>}
       </article>
       <div className="result-actions">
-        <button className="primary-button" onClick={onConfirm}>这是我</button>
+        <button className="primary-button" onClick={onConfirm}>生成分享卡</button>
+        <button className="result-outline-button" onClick={onAddGarden}><Icon name="garden" />加入我的花海</button>
         <button className="quiet-action" onClick={onBack}>有一点不像，回去修改</button>
       </div>
     </section>
@@ -567,7 +579,7 @@ function FlowerSeaScreen({ topic, palette, glow, motion, onRestart, seaCount }) 
 
 function App() {
   const [tweaks, setTweak] = useTweaks(window.TWEAK_DEFAULTS);
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState("discover");
   const [topicKey, setTopicKey] = useState("craft");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState([TOPICS.craft.questions[0]]);
@@ -575,9 +587,27 @@ function App() {
   const [audioUrl, setAudioUrl] = useState("");
   const [toast, setToast] = useState("");
   const [seaCount, setSeaCount] = useState(() => Number(localStorage.getItem("mulan-sea-count") || 128));
+  const [storyAdded, setStoryAdded] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(COMMUNITY_STORIES[0]);
+  const [profilePersonId, setProfilePersonId] = useState("aqin");
+  const [detailReturn, setDetailReturn] = useState("discover");
   const topic = TOPICS[topicKey];
   const palette = topic.palette || tweaks.palette;
   const activePalette = tweaks.palette;
+  const currentStory = useMemo(() => ({
+    id: "my-current-story",
+    personId: "me",
+    name: "我",
+    initials: "我",
+    title: topic.title,
+    excerpt: topic.detail,
+    evidence: topic.detail,
+    quote: "原来，这件我习以为常的小事，也藏着自己的办法和力量。",
+    tags: topic.qualities,
+    height: "tall",
+    crop: "crop-a"
+  }), [topic]);
+  const myProfile = { id: "me", name: "我", initials: "我", intro: "我做成的事，正在这里慢慢开花。" };
 
   const showToast = (message) => {
     setToast(message);
@@ -632,12 +662,36 @@ function App() {
     window.setTimeout(() => setScreen("result"), 1650);
   };
 
-  const confirm = () => {
-    const next = seaCount + 1;
-    setSeaCount(next);
-    localStorage.setItem("mulan-sea-count", String(next));
-    setScreen("sea");
+  const confirm = () => setScreen("share");
+
+  const addToGarden = () => {
+    if (!storyAdded) {
+      const next = seaCount + 1;
+      setSeaCount(next);
+      localStorage.setItem("mulan-sea-count", String(next));
+      setStoryAdded(true);
+      showToast("这朵木兰已加入你的花海");
+    }
+    setScreen("garden");
   };
+
+  const openStory = (story) => {
+    setSelectedStory(story);
+    setDetailReturn(screen);
+    setScreen("detail");
+  };
+
+  const openProfile = (personId) => {
+    if (personId === "me") {
+      setScreen("garden");
+      return;
+    }
+    setProfilePersonId(personId);
+    setScreen("profile");
+  };
+
+  const navigate = (target) => setScreen(target);
+  const beginStory = () => setScreen("home");
 
   const restart = () => {
     setScreen("home");
@@ -659,8 +713,8 @@ function App() {
       <AmbientBranch className="right" palette={palette} />
 
       <section className="pitch-copy" aria-label="产品介绍">
-        <p className="eyebrow">流动女性价值显影计划</p>
-        <h1>把你的故事，<em>种成一朵木兰</em></h1>
+        <p className="eyebrow">雁过有声 · 女性劳动者价值显影计划</p>
+        <h1>让她做成的事，<em>被看见</em></h1>
         <p className="lead">AI不替你定义价值。它陪你回到一个真实瞬间，看见自己当时如何观察、判断并把事情做成。</p>
         <div className="flow-rail">
           {FLOW.map((item, index) => (
@@ -677,6 +731,7 @@ function App() {
         <div className="phone">
           <div className="app-viewport">
             <StatusBar />
+            {screen === "discover" && <DiscoverScreen onOpenStory={openStory} onOpenProfile={openProfile} onNavigate={navigate} onCreate={beginStory} Icon={Icon} Magnolia={Magnolia} palette={palette} motion={tweaks.motion} />}
             {screen === "home" && <HomeScreen selected={topicKey} setSelected={setTopicKey} onStart={start} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "interview" && (
               <InterviewScreen
@@ -697,7 +752,11 @@ function App() {
               />
             )}
             {screen === "revealing" && <RevealScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "result" && <ResultScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onBack={() => setScreen("interview")} showToast={showToast} />}
+            {screen === "result" && <ResultScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => setScreen("interview")} showToast={showToast} />}
+            {screen === "share" && <ShareCardScreen topic={topic} onBack={() => setScreen("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} glow={tweaks.petalGlow} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "garden" && <GardenScreen person={myProfile} isMine currentStory={currentStory} onOpenStory={openStory} onNavigate={navigate} onCreate={beginStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
+            {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => setScreen(detailReturn)} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "profile" && <GardenScreen person={COMMUNITY_PEOPLE[profilePersonId]} isMine={false} onBack={() => setScreen("discover")} onOpenStory={openStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "sea" && <FlowerSeaScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} onRestart={restart} seaCount={seaCount} />}
           </div>
         </div>

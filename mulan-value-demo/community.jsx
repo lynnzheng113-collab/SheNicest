@@ -140,90 +140,33 @@ function CommunityBottomNav({ active, onNavigate, onCreate, Icon }) {
   );
 }
 
+const COVER_IMAGES = {
+  blueprint: "assets/story-covers/magnolia-01.png?v=visual-v1",
+  running: "assets/story-covers/magnolia-02.png?v=visual-v1",
+  style: "assets/story-covers/magnolia-03.png?v=visual-v1",
+  phone: "assets/story-covers/magnolia-04.png?v=visual-v1",
+  mending: "assets/story-covers/magnolia-05.png?v=visual-v1",
+  teaching: "assets/story-covers/magnolia-06.png?v=visual-v1"
+};
+
 const COVER_LABELS = {
-  blueprint: "图纸与柜体",
-  running: "清晨一起跑步",
-  style: "旧衣重新搭配",
-  phone: "电话与排班表",
-  mending: "修补旧外套",
-  teaching: "在缝纫机旁带新人"
+  blueprint: "粉色背景上的盛开木兰",
+  running: "向上伸展的木兰花枝",
+  style: "暖色背景中的木兰侧枝",
+  phone: "柔光中的白色木兰",
+  mending: "金色光影中的木兰",
+  teaching: "多朵木兰组成的花枝"
 };
 
 function StoryCoverArt({ variant = "blueprint" }) {
-  const scenes = {
-    blueprint: (
-      <g>
-        <rect x="32" y="35" width="146" height="116" rx="10" fill="#fffaf4" stroke="#9c3140" strokeWidth="3" />
-        {[58, 84, 110, 136].map((y) => <path key={y} d={`M45 ${y}h118`} stroke="#dcb7b2" strokeWidth="2" />)}
-        {[66, 98, 130].map((x) => <path key={x} d={`M${x} 46v94`} stroke="#ead2ce" strokeWidth="1.5" />)}
-        <path d="M56 126V74h75v52M56 98h75M92 74v52" fill="none" stroke="#425e50" strokeWidth="5" />
-        <path d="M202 63h82v113h-82zM202 101h82M243 63v113" fill="#d9b58f" stroke="#5b463d" strokeWidth="5" />
-        <path d="m168 163 82 25" stroke="#9c3140" strokeWidth="8" strokeLinecap="round" />
-        <path d="m172 163 18-6-7 17Z" fill="#f3d7c7" />
-      </g>
-    ),
-    running: (
-      <g>
-        <circle cx="252" cy="47" r="24" fill="#e2a6a2" />
-        <path d="M0 116C68 73 119 94 169 78c51-17 90-1 151-29v95H0Z" fill="#718271" />
-        <path d="M110 220c25-61 51-95 86-116 22 22 37 56 45 116Z" fill="#f5e7dc" />
-        <g stroke="#6c2832" strokeWidth="8" strokeLinecap="round" fill="none">
-          <circle cx="128" cy="103" r="10" fill="#d9a19a" stroke="none" /><path d="m128 116-12 36m12-23 24 13m-36 10-22 31m22-31 26 25" />
-          <circle cx="184" cy="89" r="10" fill="#d9a19a" stroke="none" /><path d="m184 102 7 39m-3-24 24 10m-21 14-18 36m18-36 25 28" />
-          <circle cx="232" cy="109" r="10" fill="#d9a19a" stroke="none" /><path d="m232 122-4 35m2-22 22 14m-24 8-22 29m22-29 21 29" />
-        </g>
-      </g>
-    ),
-    style: (
-      <g>
-        <rect x="28" y="26" width="94" height="170" rx="47" fill="#e8d6cb" stroke="#8b6b64" strokeWidth="4" />
-        <path d="M199 44v29m-43 19 43-19 43 19" fill="none" stroke="#425e50" strokeWidth="5" strokeLinecap="round" />
-        <path d="m162 91 24-13 13 17 13-17 24 13 24 101h-122Z" fill="#963646" stroke="#6c2431" strokeWidth="4" />
-        <path d="m199 95-22 55 22 23 22-23Z" fill="#f4e7dc" />
-        <path d="M146 176h106" stroke="#e7b9ad" strokeWidth="6" strokeDasharray="10 8" />
-        <path d="M53 173c18-23 33-21 50-3" fill="none" stroke="#425e50" strokeWidth="8" strokeLinecap="round" />
-      </g>
-    ),
-    phone: (
-      <g>
-        <rect x="34" y="49" width="94" height="154" rx="17" fill="#5b403d" />
-        <rect x="44" y="64" width="74" height="112" rx="9" fill="#fff9f2" />
-        <circle cx="81" cy="189" r="6" fill="#e8b8af" />
-        <rect x="160" y="36" width="124" height="151" rx="8" fill="#fffaf4" stroke="#9c3140" strokeWidth="3" />
-        <path d="M160 72h124M185 36v36" stroke="#9c3140" strokeWidth="4" />
-        {[96, 122, 148].map((y) => <path key={y} d={`M177 ${y}h90`} stroke="#d8b9b2" strokeWidth="5" strokeLinecap="round" />)}
-        <path d="M208 188v-31c0-17 12-27 27-27s27 10 27 27v31" fill="#425e50" />
-        <path d="M217 148h36" stroke="#f5e4d6" strokeWidth="5" />
-      </g>
-    ),
-    mending: (
-      <g>
-        <path d="m95 48 46-18 38 18 38-18 46 18-21 64-27-10v102H115V102l-27 10Z" fill="#6b7b6e" stroke="#425e50" strokeWidth="5" />
-        <path d="M141 30c4 24 42 24 38 0" fill="#f1dfd2" stroke="#425e50" strokeWidth="4" />
-        <rect x="178" y="124" width="48" height="42" rx="5" fill="#a84450" stroke="#f2c9bd" strokeWidth="4" strokeDasharray="7 5" />
-        <path d="M233 77c38 23 31 62 5 83" fill="none" stroke="#9c3140" strokeWidth="4" strokeLinecap="round" />
-        <path d="m238 160 15-4-10-10Z" fill="#f0c9bd" />
-        <circle cx="67" cy="174" r="28" fill="none" stroke="#e4a39c" strokeWidth="9" />
-      </g>
-    ),
-    teaching: (
-      <g>
-        <path d="M33 176h255" stroke="#5a4540" strokeWidth="8" strokeLinecap="round" />
-        <path d="M108 68h89c23 0 38 19 38 41v28h-127Z" fill="#f4e9dc" stroke="#425e50" strokeWidth="5" />
-        <path d="M146 69V49h55v22M197 109h31M129 137h124" fill="none" stroke="#425e50" strokeWidth="5" />
-        <circle cx="67" cy="75" r="21" fill="#d9a19a" /><path d="M38 147c2-38 13-57 29-57s29 19 31 57" fill="#923646" />
-        <circle cx="269" cy="78" r="21" fill="#d9a19a" /><path d="M242 147c2-35 12-54 27-54s25 19 27 54" fill="#6b7c70" />
-        <path d="m84 126 62 19m111-17-45 17" stroke="#d9a19a" strokeWidth="11" strokeLinecap="round" />
-        <path d="M130 145h95" stroke="#a83d4b" strokeWidth="7" strokeDasharray="8 5" />
-      </g>
-    )
-  };
+  const coverKey = COVER_IMAGES[variant] ? variant : "blueprint";
   return (
-    <svg className={`story-cover-art cover-art-${variant}`} viewBox="0 0 320 220" role="img" aria-label={COVER_LABELS[variant] || "故事配图"}>
-      <rect width="320" height="220" rx="18" fill="#f2e4da" />
-      <circle cx="24" cy="21" r="45" fill="#fff7f0" opacity="0.58" />
-      {scenes[variant] || scenes.blueprint}
-    </svg>
+    <img
+      className={`story-cover-art cover-art-${coverKey}`}
+      src={COVER_IMAGES[coverKey]}
+      alt={COVER_LABELS[coverKey]}
+      draggable="false"
+    />
   );
 }
 
@@ -351,32 +294,23 @@ function wrapCanvasText(context, text, x, y, maxWidth, lineHeight, maxLines = 4)
   if (line && lines < maxLines) context.fillText(line, x, y + lines * lineHeight);
 }
 
-function drawCanvasStoryCover(context, variant) {
-  const x = 542; const y = 155; const width = 430; const height = 380;
-  context.fillStyle = "#f2e4da";
-  context.fillRect(x, y, width, height);
-  context.strokeStyle = "#425e50";
-  context.fillStyle = "#fffaf4";
-  context.lineWidth = 8;
-  if (variant === "running") {
-    context.fillStyle = "#e2a6a2"; context.beginPath(); context.arc(x + 340, y + 72, 38, 0, Math.PI * 2); context.fill();
-    context.strokeStyle = "#6c2832";
-    [[x + 115, y + 135], [x + 220, y + 110], [x + 315, y + 150]].forEach(([rx, ry]) => {
-      context.beginPath(); context.arc(rx, ry, 15, 0, Math.PI * 2); context.stroke();
-      context.beginPath(); context.moveTo(rx, ry + 18); context.lineTo(rx, ry + 95); context.moveTo(rx, ry + 45); context.lineTo(rx - 35, ry + 72); context.moveTo(rx, ry + 48); context.lineTo(rx + 38, ry + 64); context.moveTo(rx, ry + 95); context.lineTo(rx - 37, ry + 145); context.moveTo(rx, ry + 95); context.lineTo(rx + 43, ry + 138); context.stroke();
-    });
-  } else if (variant === "style") {
-    context.strokeStyle = "#425e50"; context.beginPath(); context.moveTo(x + 220, y + 55); context.lineTo(x + 220, y + 104); context.moveTo(x + 145, y + 138); context.lineTo(x + 220, y + 104); context.lineTo(x + 295, y + 138); context.stroke();
-    context.fillStyle = "#963646"; context.beginPath(); context.moveTo(x + 150, y + 137); context.lineTo(x + 194, y + 112); context.lineTo(x + 220, y + 148); context.lineTo(x + 246, y + 112); context.lineTo(x + 290, y + 137); context.lineTo(x + 330, y + 330); context.lineTo(x + 110, y + 330); context.closePath(); context.fill();
-  } else if (variant === "teaching") {
-    context.fillStyle = "#fffaf4"; context.strokeStyle = "#425e50"; context.fillRect(x + 90, y + 90, 240, 150); context.strokeRect(x + 90, y + 90, 240, 150);
-    context.beginPath(); context.moveTo(x + 130, y + 240); context.lineTo(x + 360, y + 240); context.moveTo(x + 180, y + 90); context.lineTo(x + 180, y + 55); context.lineTo(x + 280, y + 55); context.lineTo(x + 280, y + 90); context.stroke();
-    context.strokeStyle = "#9c3140"; context.beginPath(); context.moveTo(x + 55, y + 300); context.lineTo(x + 375, y + 300); context.stroke();
-  } else {
-    context.fillStyle = "#fffaf4"; context.strokeStyle = "#9c3140"; context.fillRect(x + 30, y + 48, 210, 220); context.strokeRect(x + 30, y + 48, 210, 220);
-    context.strokeStyle = "#425e50"; context.beginPath(); context.moveTo(x + 62, y + 220); context.lineTo(x + 62, y + 92); context.lineTo(x + 200, y + 92); context.lineTo(x + 200, y + 220); context.moveTo(x + 62, y + 154); context.lineTo(x + 200, y + 154); context.stroke();
-    context.fillStyle = "#d9b58f"; context.fillRect(x + 270, y + 88, 125, 210); context.strokeRect(x + 270, y + 88, 125, 210);
-  }
+function loadStoryCoverImage(variant) {
+  const coverKey = COVER_IMAGES[variant] ? variant : "blueprint";
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = COVER_IMAGES[coverKey];
+  });
+}
+
+function drawImageCover(context, image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const sourceWidth = width / scale;
+  const sourceHeight = height / scale;
+  const sourceX = (image.naturalWidth - sourceWidth) / 2;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
 }
 
 async function buildShareImage(topic, coverKey) {
@@ -392,7 +326,8 @@ async function buildShareImage(topic, coverKey) {
   context.fillStyle = "#8f1d2c";
   context.font = "700 58px 'Noto Serif SC', serif";
   context.fillText("这是我的故事", 96, 148);
-  drawCanvasStoryCover(context, coverKey);
+  const coverImage = await loadStoryCoverImage(coverKey);
+  drawImageCover(context, coverImage, 542, 155, 430, 380);
   context.fillStyle = "#301c19";
   context.font = "700 64px 'Noto Serif SC', serif";
   wrapCanvasText(context, topic.title, 96, 700, 850, 88, 4);

@@ -2,6 +2,7 @@ const { useEffect, useMemo, useRef, useState } = React;
 const {
   COMMUNITY_STORIES,
   COMMUNITY_PEOPLE,
+  StoryCoverArt,
   DiscoverScreen,
   StoryDetailScreen,
   GardenScreen,
@@ -91,7 +92,8 @@ const TOPICS = {
   }
 };
 
-const FLOW = ["选择一件小事", "讲清怎么做到", "生成专属木兰", "汇入木兰花海"];
+const FLOW = ["选择一件小事", "讲清怎么做到", "生成故事价值卡", "汇入个人花海"];
+const TOPIC_COVERS = { craft: "blueprint", body: "running", style: "style", influence: "teaching" };
 const ROUTE_SCREENS = new Set(["discover", "home", "interview", "revealing", "result", "share", "garden", "detail", "profile", "sea"]);
 
 function getInitialScreen() {
@@ -257,7 +259,7 @@ function HomeScreen({ selected, setSelected, onStart, onBack, palette, glow, mot
         <span></span>
       </div>
       <div className="home-copy">
-        <h2>发现你的<br />木兰时刻</h2>
+        <h2>讲出一件<br />你做成的小事</h2>
         <p>每一件做成的小事，<br />都藏着你的力量</p>
       </div>
       <div className="home-flower">
@@ -471,7 +473,7 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
         <button className="finish-interview" disabled={answeredRounds === 0 || recording || processing} onClick={onFinish}>
           <Icon name="leaf" />
           <span>我暂时没什么想说的了</span>
-          <small>看看我的木兰花</small>
+          <small>看看这件事里的价值</small>
         </button>
       </div>
     </section>
@@ -489,7 +491,7 @@ function RevealScreen({ topic, palette, glow, motion }) {
   );
 }
 
-function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
+function ResultScreen({ topic, coverKey, StoryCoverArt, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -511,19 +513,22 @@ function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onAdd
   };
 
   return (
-    <section className="screen result-screen" data-screen-label="04 专属木兰花" data-motion={motion}>
+    <section className="screen result-screen" data-screen-label="04 故事价值" data-motion={motion}>
       <ScreenTop
-        title="你的专属木兰花"
+        title="这件事里的你"
         onBack={onBack}
         action={<button className="ghost-button" onClick={onConfirm} aria-label="生成分享卡"><Icon name="share" /></button>}
       />
-      <div className="result-flower-zone">
+      <div className="result-story-zone">
+        <StoryCoverArt variant={coverKey} />
+        <span className="result-story-label">这件做成的小事</span>
+      </div>
+      <div className="result-quality-list" aria-label="从故事中提炼的价值候选">
         {topic.qualities.map((quality, index) => (
           <span className="quality-chip" key={quality} style={{ animationDelay: `${0.08 * index}s` }}>
             <Icon name={index === 0 ? "eye" : index === 4 ? "people" : "spark"} />{quality}
           </span>
         ))}
-        <Magnolia bloom={1} size={206} palette={palette} glow={glow} id="result" />
       </div>
       <article className="evidence-card">
         <p className="label">你的价值证据</p>
@@ -568,7 +573,7 @@ function FlowerSeaScreen({ topic, palette, glow, motion, onRestart, seaCount }) 
         <div className="field-flower mine" style={{ left: "41%", top: "52%" }}>
           <Magnolia bloom={1} size={138} palette={palette} glow={glow} id="mine" />
         </div>
-        <div className="mine-label"><Icon name="spark" size={14} />这是我的木兰</div>
+        <div className="mine-label"><Icon name="spark" size={14} />这是我的故事花</div>
         <div className="sea-story one">她把陌生图纸，在脑中先装了一遍</div>
         <div className="sea-story two">她从照顾身体开始，带着大家一起行动</div>
         <div className="sea-story three">她在有限预算里，穿出了自己的颜色</div>
@@ -614,8 +619,8 @@ function App() {
     quote: "原来，这件我习以为常的小事，也藏着自己的办法和力量。",
     tags: topic.qualities,
     height: "tall",
-    crop: "crop-a"
-  }), [topic]);
+    cover: TOPIC_COVERS[topicKey]
+  }), [topic, topicKey]);
   const myProfile = { id: "me", name: "我", initials: "我", intro: "我做成的事，正在这里慢慢开花。" };
 
   const showToast = (message) => {
@@ -691,7 +696,7 @@ function App() {
 
   const finishInterview = () => {
     if (!answers.some((answer) => answer && answer.trim())) {
-      showToast("先和我讲一点，再为你生成木兰花");
+      showToast("先和我讲一点，再为你整理这件事里的价值");
       return;
     }
     navigateTo("revealing");
@@ -787,8 +792,8 @@ function App() {
               />
             )}
             {screen === "revealing" && <RevealScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "result" && <ResultScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
-            {screen === "share" && <ShareCardScreen topic={topic} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} glow={tweaks.petalGlow} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "result" && <ResultScreen topic={topic} coverKey={TOPIC_COVERS[topicKey]} StoryCoverArt={StoryCoverArt} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
+            {screen === "share" && <ShareCardScreen topic={topic} coverKey={TOPIC_COVERS[topicKey]} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Waveform={Waveform} showToast={showToast} motion={tweaks.motion} />}
             {screen === "garden" && <GardenScreen person={myProfile} isMine currentStory={currentStory} onOpenStory={openStory} onNavigate={navigate} onCreate={beginStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => navigateBack("discover")} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}
             {screen === "profile" && <GardenScreen person={COMMUNITY_PEOPLE[profilePersonId]} isMine={false} onBack={() => navigateBack("discover")} onOpenStory={openStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}

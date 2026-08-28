@@ -101,7 +101,7 @@
   cursor: pointer;
 }
 
-.story-flower-visual {
+.story-cover-visual {
   height: 178px;
   display: grid;
   place-items: center;
@@ -110,27 +110,23 @@
   background: #f4e7df;
 }
 
-.story-card.short .story-flower-visual { height: 118px; }
-.story-card.medium .story-flower-visual { height: 150px; }
-.story-card.tall .story-flower-visual { height: 182px; }
+.story-card.short .story-cover-visual { height: 118px; }
+.story-card.medium .story-cover-visual { height: 150px; }
+.story-card.tall .story-cover-visual { height: 182px; }
 
-.story-flower-visual .magnolia-photo {
-  max-width: none;
-  position: absolute;
+.story-cover-art {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-.story-flower-visual.crop-a { background: #f0ddd3; }
-.story-flower-visual.crop-a .magnolia-photo { transform: translate(10px, 8px) rotate(-4deg) scale(1.12); }
-.story-flower-visual.crop-b { background: #ece7db; }
-.story-flower-visual.crop-b .magnolia-photo { transform: translate(-25px, 7px) rotate(5deg) scale(1.05); }
-.story-flower-visual.crop-c { background: #f4e5e0; }
-.story-flower-visual.crop-c .magnolia-photo { transform: translate(29px, 24px) rotate(-9deg) scale(1.35); }
-.story-flower-visual.crop-d { background: #e8e5d8; }
-.story-flower-visual.crop-d .magnolia-photo { transform: translate(-12px, 14px) rotate(2deg) scale(1.2); }
-.story-flower-visual.crop-e { background: #ead8d1; }
-.story-flower-visual.crop-e .magnolia-photo { transform: translate(30px, 4px) rotate(9deg) scale(1.1); }
-.story-flower-visual.crop-f { background: #efe8dc; }
-.story-flower-visual.crop-f .magnolia-photo { transform: translate(-25px, 18px) rotate(-7deg) scale(1.32); }
+.story-cover-visual.cover-blueprint { background: #ead7cc; }
+.story-cover-visual.cover-running { background: #dfe2d4; }
+.story-cover-visual.cover-style { background: #efe0da; }
+.story-cover-visual.cover-phone { background: #eadfd2; }
+.story-cover-visual.cover-mending { background: #dbe0d5; }
+.story-cover-visual.cover-teaching { background: #f0ddd5; }
 
 .demo-pill {
   position: absolute;
@@ -292,13 +288,11 @@
 
 .story-detail-scroll { padding: 4px 18px 28px; }
 
-.story-detail-screen .story-flower-visual {
+.story-detail-screen .story-cover-visual {
   height: 224px;
   margin: 0 -18px 12px;
   border-radius: 0 0 26px 26px;
 }
-
-.story-detail-screen .story-flower-visual .magnolia-photo { transform: translate(58px, 7px) scale(1.18); }
 
 .detail-person {
   width: 100%;
@@ -521,11 +515,17 @@
   font-weight: 700;
 }
 
-.share-flower {
-  height: 205px;
-  display: grid;
-  place-items: center;
-  margin: -25px -20px -14px 90px;
+.share-cover {
+  height: 188px;
+  margin: 12px 0 15px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f2e4da;
+}
+
+.share-cover .story-cover-art {
+  width: 100%;
+  height: 100%;
 }
 
 .share-card-preview h2 {
@@ -628,7 +628,54 @@
 
 .result-outline-button svg { width: 18px; height: 18px; }
 
-.result-screen .quality-chip { z-index: 3; }
+.result-story-zone {
+  height: 205px;
+  margin: 3px 0 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(104, 70, 65, 0.1);
+  border-radius: 24px;
+  background: #f2e4da;
+}
+
+.result-story-zone .story-cover-art {
+  width: 100%;
+  height: 100%;
+}
+
+.result-story-label {
+  position: absolute;
+  right: 12px;
+  bottom: 11px;
+  padding: 5px 10px;
+  border: 1px solid rgba(143, 29, 44, 0.18);
+  border-radius: 99px;
+  color: var(--accent);
+  background: rgba(255, 250, 245, 0.92);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.result-quality-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.result-quality-list .quality-chip {
+  position: static;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  min-height: 28px;
+  padding: 5px 8px;
+  transform: none;
+  box-shadow: none;
+  font-size: 9px;
+}
 
 @media (max-height: 735px) and (min-width: 781px) {
   .discover-header { padding-top: 3px; padding-bottom: 8px; }
@@ -636,7 +683,7 @@
   .community-nav { height: 70px; padding-bottom: 7px; }
   .discover-scroll { padding-bottom: 88px; }
   .share-card-preview { min-height: 460px; }
-  .share-flower { height: 170px; }
+  .share-cover { height: 160px; }
 }
 
 @media (max-width: 780px) {

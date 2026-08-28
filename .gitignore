@@ -10,5 +10,6 @@ design/runtime-*.png
 
 # Common local files
 node_modules/
+.vercel/
 .DS_Store
 Thumbs.db

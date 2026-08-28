@@ -92,6 +92,12 @@ const TOPICS = {
 };
 
 const FLOW = ["选择一件小事", "讲清怎么做到", "生成专属木兰", "汇入木兰花海"];
+const ROUTE_SCREENS = new Set(["discover", "home", "interview", "revealing", "result", "share", "garden", "detail", "profile", "sea"]);
+
+function getInitialScreen() {
+  const route = window.location.hash.replace(/^#/, "");
+  return ROUTE_SCREENS.has(route) ? route : "discover";
+}
 
 function getAnswerFocus(answer) {
   const clean = String(answer || "")
@@ -236,15 +242,19 @@ function ScreenTop({ title, onBack, action }) {
   );
 }
 
-function HomeScreen({ selected, setSelected, onStart, palette, glow, motion }) {
+function HomeScreen({ selected, setSelected, onStart, onBack, palette, glow, motion }) {
   return (
     <section className="screen home-screen" data-screen-label="01 首页" data-motion={motion}>
-      <div className="home-brand">
-        <svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <path d="M20 32C7 27 8 12 20 5c12 7 13 22 0 27Z" fill={palette[2]} stroke={palette[0]} />
-          <path d="M20 31V13" stroke={palette[0]} strokeWidth="1.8" />
-        </svg>
-        <span>雁过有声</span>
+      <div className="home-nav">
+        <button className="icon-button" onClick={onBack} aria-label="返回故事页"><Icon name="arrow" /></button>
+        <div className="home-brand">
+          <svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+            <path d="M20 32C7 27 8 12 20 5c12 7 13 22 0 27Z" fill={palette[2]} stroke={palette[0]} />
+            <path d="M20 31V13" stroke={palette[0]} strokeWidth="1.8" />
+          </svg>
+          <span>雁过有声</span>
+        </div>
+        <span></span>
       </div>
       <div className="home-copy">
         <h2>发现你的<br />木兰时刻</h2>
@@ -505,7 +515,7 @@ function ResultScreen({ topic, palette, glow, motion, audioUrl, onConfirm, onAdd
       <ScreenTop
         title="你的专属木兰花"
         onBack={onBack}
-        action={<button className="ghost-button" onClick={() => showToast("分享前会先由你确认内容")} aria-label="分享"><Icon name="share" /></button>}
+        action={<button className="ghost-button" onClick={onConfirm} aria-label="生成分享卡"><Icon name="share" /></button>}
       />
       <div className="result-flower-zone">
         {topic.qualities.map((quality, index) => (
@@ -579,7 +589,7 @@ function FlowerSeaScreen({ topic, palette, glow, motion, onRestart, seaCount }) 
 
 function App() {
   const [tweaks, setTweak] = useTweaks(window.TWEAK_DEFAULTS);
-  const [screen, setScreen] = useState("discover");
+  const [screen, setScreen] = useState(getInitialScreen);
   const [topicKey, setTopicKey] = useState("craft");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState([TOPICS.craft.questions[0]]);
@@ -590,7 +600,6 @@ function App() {
   const [storyAdded, setStoryAdded] = useState(false);
   const [selectedStory, setSelectedStory] = useState(COMMUNITY_STORIES[0]);
   const [profilePersonId, setProfilePersonId] = useState("aqin");
-  const [detailReturn, setDetailReturn] = useState("discover");
   const topic = TOPICS[topicKey];
   const palette = topic.palette || tweaks.palette;
   const activePalette = tweaks.palette;
@@ -615,6 +624,33 @@ function App() {
     showToast.timer = window.setTimeout(() => setToast(""), 2200);
   };
 
+  const navigateTo = (target, { replace = false } = {}) => {
+    if (!ROUTE_SCREENS.has(target)) return;
+    const currentDepth = Number(window.history.state?.mulanDepth || 0);
+    const state = { mulanRoute: true, mulanDepth: replace ? currentDepth : currentDepth + 1, target };
+    if (replace) window.history.replaceState(state, "", `#${target}`);
+    else window.history.pushState(state, "", `#${target}`);
+    setScreen(target);
+  };
+
+  const navigateBack = (fallback = "discover") => {
+    const currentDepth = Number(window.history.state?.mulanDepth || 0);
+    if (window.history.state?.mulanRoute && currentDepth > 0) window.history.back();
+    else navigateTo(fallback, { replace: true });
+  };
+
+  useEffect(() => {
+    const initial = getInitialScreen();
+    window.history.replaceState({ mulanRoute: true, mulanDepth: 0, target: initial }, "", `#${initial}`);
+    setScreen(initial);
+    const handlePopState = (event) => {
+      const route = event.state?.target || getInitialScreen();
+      setScreen(ROUTE_SCREENS.has(route) ? route : "discover");
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => {
     document.documentElement.style.setProperty("--mulan", activePalette[0]);
     document.documentElement.style.setProperty("--paper", activePalette[1]);
@@ -637,7 +673,7 @@ function App() {
     setQuestions([TOPICS[topicKey].questions[0]]);
     setAnswers([""]);
     setQuestionIndex(0);
-    setScreen("interview");
+    navigateTo("interview");
   };
 
   const nextQuestion = (spokenAnswer) => {
@@ -658,11 +694,11 @@ function App() {
       showToast("先和我讲一点，再为你生成木兰花");
       return;
     }
-    setScreen("revealing");
-    window.setTimeout(() => setScreen("result"), 1650);
+    navigateTo("revealing");
+    window.setTimeout(() => navigateTo("result", { replace: true }), 1650);
   };
 
-  const confirm = () => setScreen("share");
+  const confirm = () => navigateTo("share");
 
   const addToGarden = () => {
     if (!storyAdded) {
@@ -672,29 +708,28 @@ function App() {
       setStoryAdded(true);
       showToast("这朵木兰已加入你的花海");
     }
-    setScreen("garden");
+    navigateTo("garden");
   };
 
   const openStory = (story) => {
     setSelectedStory(story);
-    setDetailReturn(screen);
-    setScreen("detail");
+    navigateTo("detail");
   };
 
   const openProfile = (personId) => {
     if (personId === "me") {
-      setScreen("garden");
+      navigateTo("garden");
       return;
     }
     setProfilePersonId(personId);
-    setScreen("profile");
+    navigateTo("profile");
   };
 
-  const navigate = (target) => setScreen(target);
-  const beginStory = () => setScreen("home");
+  const navigate = (target) => navigateTo(target, { replace: true });
+  const beginStory = () => navigateTo("home");
 
   const restart = () => {
-    setScreen("home");
+    navigateTo("home");
     setQuestionIndex(0);
     setQuestions([TOPICS[topicKey].questions[0]]);
     setAnswers([""]);
@@ -702,7 +737,7 @@ function App() {
 
   const goBackFromInterview = () => {
     if (questionIndex > 0) setQuestionIndex((value) => value - 1);
-    else setScreen("home");
+    else navigateBack("home");
   };
 
   const openTweaks = () => window.postMessage({ type: "miaoda:tweaks:activate" }, "*");
@@ -732,7 +767,7 @@ function App() {
           <div className="app-viewport">
             <StatusBar />
             {screen === "discover" && <DiscoverScreen onOpenStory={openStory} onOpenProfile={openProfile} onNavigate={navigate} onCreate={beginStory} Icon={Icon} Magnolia={Magnolia} palette={palette} motion={tweaks.motion} />}
-            {screen === "home" && <HomeScreen selected={topicKey} setSelected={setTopicKey} onStart={start} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
+            {screen === "home" && <HomeScreen selected={topicKey} setSelected={setTopicKey} onStart={start} onBack={() => navigateBack("discover")} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "interview" && (
               <InterviewScreen
                 topicKey={topicKey}
@@ -752,11 +787,11 @@ function App() {
               />
             )}
             {screen === "revealing" && <RevealScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "result" && <ResultScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => setScreen("interview")} showToast={showToast} />}
-            {screen === "share" && <ShareCardScreen topic={topic} onBack={() => setScreen("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} glow={tweaks.petalGlow} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "result" && <ResultScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
+            {screen === "share" && <ShareCardScreen topic={topic} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} glow={tweaks.petalGlow} showToast={showToast} motion={tweaks.motion} />}
             {screen === "garden" && <GardenScreen person={myProfile} isMine currentStory={currentStory} onOpenStory={openStory} onNavigate={navigate} onCreate={beginStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => setScreen(detailReturn)} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}
-            {screen === "profile" && <GardenScreen person={COMMUNITY_PEOPLE[profilePersonId]} isMine={false} onBack={() => setScreen("discover")} onOpenStory={openStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
+            {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => navigateBack("discover")} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "profile" && <GardenScreen person={COMMUNITY_PEOPLE[profilePersonId]} isMine={false} onBack={() => navigateBack("discover")} onOpenStory={openStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "sea" && <FlowerSeaScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} onRestart={restart} seaCount={seaCount} />}
           </div>
         </div>

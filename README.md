@@ -31,6 +31,7 @@ python -m http.server 4173 --directory mulan-value-demo
 - `design/`：产品视觉稿
 - `PROJECT_CONTEXT.md`：项目长期上下文
 - `docs/PRD_BASELINE.md`：当前产品与验收基线
+- `docs/INTERACTION_FLOW.md`：页面路由、点击行为与返回规则
 - `docs/source/`：原始需求文档附件
 
 ## 产品原则

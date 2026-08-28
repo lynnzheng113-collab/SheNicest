@@ -316,9 +316,17 @@ textarea:focus-visible {
   padding-top: 62px;
 }
 
+.home-nav {
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+}
+
 .home-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 9px;
   color: var(--accent);
   font-family: "Noto Serif SC", serif;

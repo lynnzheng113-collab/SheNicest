@@ -1,0 +1,14 @@
+# Local authorization and temporary artifacts
+.codex-auth/
+lark-doc-readonly-auth.png
+.env
+.env.*
+!.env.example
+tmp/
+*.log
+
+# Common local files
+node_modules/
+.DS_Store
+Thumbs.db
+

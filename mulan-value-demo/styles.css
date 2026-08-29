@@ -188,7 +188,7 @@ textarea:focus-visible {
 
 .phone {
   width: min(100%, 408px);
-  height: min(860px, calc(100vh - 66px));
+  height: min(860px, calc(100dvh - 66px));
   min-height: 680px;
   padding: 9px;
   border: 2px solid rgba(56, 40, 37, 0.82);
@@ -1543,6 +1543,64 @@ textarea:focus-visible {
   }
 }
 
+@media (max-height: 860px) and (min-width: 781px) {
+  .prototype-shell {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .phone {
+    height: calc(100dvh - 24px);
+    min-height: 0;
+  }
+
+  .home-screen {
+    padding-top: 54px;
+    padding-bottom: 18px;
+  }
+
+  .home-copy {
+    margin-top: 14px;
+  }
+
+  .home-copy p {
+    margin-top: 8px;
+    line-height: 1.55;
+  }
+
+  .home-flower {
+    min-height: 132px;
+    margin-top: 0;
+  }
+
+  .home-flower .magnolia-photo {
+    width: 132px !important;
+    height: 143px !important;
+  }
+
+  .question-toolbar {
+    margin-bottom: 6px;
+  }
+
+  .topic-grid {
+    gap: 8px;
+  }
+
+  .topic-card {
+    min-height: 72px;
+    padding: 10px;
+  }
+
+  .home-screen .primary-button {
+    min-height: 52px;
+    margin-top: 10px;
+  }
+
+  .home-screen .privacy-note {
+    margin-top: 6px;
+  }
+}
+
 @media (max-width: 780px) {
   body {
     background: var(--paper);
@@ -1585,6 +1643,68 @@ textarea:focus-visible {
 
   .screen {
     padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-height: 720px) and (max-width: 780px) {
+  .home-screen {
+    padding-top: max(48px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .home-copy {
+    margin-top: 10px;
+  }
+
+  .home-copy h2 {
+    font-size: 27px;
+    line-height: 1.28;
+  }
+
+  .home-copy p {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .home-flower {
+    min-height: 112px;
+    margin-top: 0;
+  }
+
+  .home-flower .magnolia-photo {
+    width: 126px !important;
+    height: 136px !important;
+  }
+
+  .question-toolbar {
+    min-height: 28px;
+    margin-bottom: 4px;
+  }
+
+  .topic-grid {
+    gap: 7px;
+  }
+
+  .topic-card {
+    min-height: 64px;
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .topic-card span {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .home-screen .primary-button {
+    min-height: 50px;
+    margin-top: 8px;
+  }
+
+  .home-screen .privacy-note {
+    margin-top: 5px;
+    font-size: 10px;
   }
 }
 

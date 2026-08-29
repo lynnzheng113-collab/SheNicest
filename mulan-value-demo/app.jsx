@@ -95,7 +95,7 @@ const TOPICS = {
 const QUESTION_BATCHES = [
   [
     { id: "thanks", topicKey: "influence", icon: "heart", question: "最近一年，你做的哪件事收到了感谢？" },
-    { id: "work", topicKey: "craft", icon: "briefcase", question: "你的工作内容是什么？" },
+    { id: "work", topicKey: "craft", icon: "briefcase", question: "最近完成的哪项工作让你感到开心？" },
     { id: "cooking", topicKey: "style", icon: "palette", question: "你做的哪道菜被家人朋友夸奖好吃？" },
     { id: "help", topicKey: "influence", icon: "people", question: "最近收到的一次求助是针对哪件事？" }
   ],

@@ -413,67 +413,107 @@
   margin: 0 12px 7px;
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(77, 96, 77, 0.12);
+  border: 1px solid rgba(109, 91, 65, 0.16);
   border-radius: 28px;
-  background: #ebe7d8;
-  box-shadow: 0 12px 30px rgba(80, 67, 49, 0.1) inset;
+  background-color: #dfd4ba;
+  background-image: url("assets/garden-magnolia-tree-v1.png");
+  background-position: center 48%;
+  background-size: cover;
+  box-shadow:
+    0 18px 36px rgba(74, 56, 38, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
 .garden-world::before,
 .garden-world::after {
   content: "";
   position: absolute;
-  right: -15%;
-  bottom: -14%;
-  left: -15%;
-  height: 46%;
-  border-radius: 50% 50% 0 0;
-  background: #69735d;
-  opacity: 0.34;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.garden-world::before {
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 240, 0.28) 0%, rgba(255, 249, 240, 0.04) 30%, rgba(38, 50, 40, 0.08) 72%, rgba(24, 37, 30, 0.3) 100%),
+    radial-gradient(circle at 52% 35%, rgba(255, 238, 197, 0.18), transparent 45%);
 }
 
 .garden-world::after {
-  bottom: -24%;
-  height: 42%;
-  background: #425e50;
-  opacity: 0.38;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 30%;
+  background: linear-gradient(180deg, transparent, rgba(24, 38, 31, 0.26));
 }
 
 .garden-haze {
   position: absolute;
+  z-index: 1;
   inset: 0;
-  background: rgba(255, 248, 238, 0.23);
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 247, 234, 0.08), transparent 24%, transparent 76%, rgba(255, 247, 234, 0.08));
 }
 
 .garden-bloom {
   position: absolute;
-  z-index: 2;
-  width: 120px;
-  height: 150px;
+  z-index: 3;
+  width: 116px;
+  height: 58px;
   padding: 0;
   border: 0;
   color: #533e39;
   background: transparent;
   cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease;
 }
 
-.garden-bloom .magnolia-photo { position: absolute; bottom: 4px; left: -12px; }
+.garden-bloom .magnolia-photo {
+  position: absolute;
+  width: 34px !important;
+  height: 42px !important;
+  right: 5px;
+  bottom: 0;
+  left: auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .garden-bloom > span {
   position: absolute;
   z-index: 3;
-  top: 9px;
+  top: 0;
   left: 4px;
-  padding: 5px 9px;
-  border: 1px solid rgba(143, 29, 44, 0.16);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 10px 6px 8px;
+  border: 1px solid rgba(117, 77, 61, 0.2);
   border-radius: 99px;
-  background: rgba(255, 250, 245, 0.91);
-  box-shadow: 0 4px 12px rgba(73, 52, 48, 0.08);
+  background: rgba(255, 250, 244, 0.88);
+  box-shadow: 0 5px 14px rgba(60, 44, 35, 0.14);
+  backdrop-filter: blur(10px);
   font-size: 9px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.garden-bloom:nth-of-type(even) .magnolia-photo { transform: scaleX(-1) rotate(-4deg); }
-.garden-bloom:hover { z-index: 6; transform: translateY(-3px); }
+.garden-bloom > span::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(255, 250, 244, 0.9);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px rgba(143, 29, 44, 0.22), 0 0 12px rgba(255, 236, 206, 0.8);
+}
+
+.garden-bloom:nth-of-type(even) > span { left: auto; right: 4px; }
+.garden-bloom:hover,
+.garden-bloom:focus-visible { z-index: 6; transform: translateY(-3px); filter: brightness(1.04); }
+.garden-bloom:focus-visible { outline: 2px solid rgba(255, 250, 244, 0.95); outline-offset: 2px; border-radius: 18px; }
 
 .garden-ground-copy {
   position: absolute;
@@ -488,7 +528,9 @@
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 16px;
   color: #fffaf5;
-  background: rgba(54, 70, 60, 0.78);
+  background: rgba(39, 53, 45, 0.78);
+  box-shadow: 0 10px 24px rgba(22, 32, 27, 0.18);
+  backdrop-filter: blur(12px);
 }
 
 .garden-ground-copy strong { font-family: "Noto Serif SC", serif; font-size: 12px; }

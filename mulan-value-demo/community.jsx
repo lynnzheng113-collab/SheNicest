@@ -244,7 +244,7 @@ function StoryDetailScreen({ story, onBack, onOpenProfile, ScreenTop, Icon, Wave
 }
 
 const GARDEN_POSITIONS = [
-  [8, 31, 116], [58, 24, 132], [30, 48, 126], [67, 54, 110], [2, 67, 108], [47, 72, 128]
+  [8, 27, 116], [59, 21, 132], [31, 43, 126], [67, 48, 110], [5, 61, 108], [49, 67, 128]
 ];
 
 function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNavigate, onCreate, ScreenTop, Icon, Magnolia, palette, glow, motion }) {

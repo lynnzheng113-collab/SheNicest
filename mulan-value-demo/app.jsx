@@ -1,5 +1,6 @@
 const { useEffect, useMemo, useRef, useState } = React;
 const {
+  AQIN_LEARNING_STORY,
   COMMUNITY_STORIES,
   COMMUNITY_PEOPLE,
   StoryCoverArt,
@@ -94,9 +95,9 @@ const TOPICS = {
 
 const QUESTION_BATCHES = [
   [
-    { id: "thanks", topicKey: "influence", icon: "heart", question: "最近一年，你做的哪件事收到了感谢？" },
+    { id: AQIN_LEARNING_STORY.id, topicKey: "craft", icon: "briefcase", question: AQIN_LEARNING_STORY.interview.questions[0] },
     { id: "work", topicKey: "craft", icon: "briefcase", question: "最近完成的哪项工作让你感到开心？" },
-    { id: "cooking", topicKey: "style", icon: "palette", question: "你做的哪道菜被家人朋友夸奖好吃？" },
+    { id: "thanks", topicKey: "influence", icon: "heart", question: "最近一年，你做的哪件事收到了感谢？" },
     { id: "help", topicKey: "influence", icon: "people", question: "最近收到的一次求助是针对哪件事？" }
   ],
   [
@@ -113,9 +114,11 @@ const QUESTION_BATCHES = [
   ]
 ];
 
-// 新故事到位后，只需替换这里：questions 按访谈顺序填写，result 放最终故事。
-const DEMO_STORY_SLOT = {
-  questions: [],
+const STORY_BY_PROMPT = {
+  [AQIN_LEARNING_STORY.id]: AQIN_LEARNING_STORY
+};
+
+const DEFAULT_STORY_DRAFT = {
   result: {
     title: "故事标题待补充",
     body: "你稍后提供的完整故事将展示在这里。故事内容确定后，直接替换这段占位文字即可。",
@@ -195,6 +198,14 @@ function getExampleAnswer(topic, round) {
 
 function isClosingAnswer(answer) {
   return /没什么(想说|可说|了)|没有了|说完了|想不到了|先到这里|就这些|差不多了/.test(String(answer || ""));
+}
+
+function renderStoryText(text) {
+  return String(text || "").split(/(\*\*.*?\*\*)/g).filter(Boolean).map((part, index) => (
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>
+      : <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>
+  ));
 }
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
@@ -338,7 +349,7 @@ function HomeScreen({ prompts, selectedPromptId, onSelectPrompt, onChangeBatch, 
   );
 }
 
-function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswers, onBack, onNext, onFinish, palette, glow, motion, audioUrl, setAudioUrl, showToast }) {
+function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswers, onBack, onNext, onFinish, palette, glow, motion, audioUrl, setAudioUrl, showToast, story }) {
   const topic = TOPICS[topicKey];
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -353,6 +364,7 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
   const finalizeTimerRef = useRef(null);
   const currentAnswer = answers[questionIndex] || "";
   const currentQuestion = questions[questionIndex] || topic.questions[0];
+  const scriptedAnswer = story?.interview.demoAnswers?.[questionIndex] || "";
   const answeredRounds = answers.filter((answer) => answer && answer.trim()).length;
   const bloom = Math.min(1, 0.22 + (answeredRounds + (currentAnswer ? 0.6 : 0)) * 0.11);
 
@@ -417,7 +429,7 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
     setProcessing(true);
     window.clearTimeout(finalizeTimerRef.current);
     finalizeTimerRef.current = window.setTimeout(() => {
-      const spokenAnswer = transcriptRef.current.trim() || getExampleAnswer(topic, questionIndex);
+      const spokenAnswer = transcriptRef.current.trim() || scriptedAnswer || getExampleAnswer(topic, questionIndex);
       updateAnswer(spokenAnswer);
       setProcessing(false);
       onNext(spokenAnswer);
@@ -547,6 +559,9 @@ function RevealScreen({ topic, palette, glow, motion }) {
 function ResultScreen({ topic, storyDraft, coverKey, StoryCoverArt, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
+  const [reviewNote, setReviewNote] = useState("");
+  const [reviewed, setReviewed] = useState(false);
 
   const toggleAudio = () => {
     if (!audioUrl) {
@@ -565,12 +580,30 @@ function ResultScreen({ topic, storyDraft, coverKey, StoryCoverArt, motion, audi
     }
   };
 
+  const acceptStory = () => {
+    setReviewed(true);
+    setReviewMode(false);
+    showToast("这版故事已经由你确认");
+  };
+
+  const saveReviewNote = () => {
+    const note = reviewNote.trim();
+    if (!note) {
+      showToast("先写下想补充或调整的内容");
+      return;
+    }
+    setReviewNote(note);
+    setReviewed(true);
+    setReviewMode(false);
+    showToast("你的补充与调整已经记下");
+  };
+
   return (
     <section className="screen result-screen" data-screen-label="04 故事价值" data-motion={motion}>
       <ScreenTop
         title="这件事里的你"
         onBack={onBack}
-        action={<button className="ghost-button" onClick={onConfirm} aria-label="生成分享卡"><Icon name="share" /></button>}
+        action={<button className="ghost-button" onClick={reviewed ? onConfirm : () => showToast("先确认或补充这段故事，再生成分享卡")} aria-label="生成分享卡"><Icon name="share" /></button>}
       />
       <div className="result-story-zone">
         <StoryCoverArt variant={coverKey} />
@@ -585,16 +618,52 @@ function ResultScreen({ topic, storyDraft, coverKey, StoryCoverArt, motion, audi
       </div>
       <article className={`story-draft-card ${storyDraft.isPlaceholder ? "placeholder" : ""}`}>
         <div className="story-draft-heading">
-          <span>你的故事</span>
-          {storyDraft.isPlaceholder && <small>内容预留</small>}
+          <span>{storyDraft.label || "你的故事"}</span>
+          {(storyDraft.badge || storyDraft.isPlaceholder) && <small>{storyDraft.badge || "内容预留"}</small>}
         </div>
         <h3>{storyDraft.title}</h3>
-        <p>{storyDraft.body}</p>
+        {storyDraft.subtitle && <p className="story-draft-subtitle">{storyDraft.subtitle}</p>}
+        {storyDraft.paragraphs ? (
+          <div className="story-draft-body">
+            {storyDraft.paragraphs.map((paragraph, index) => <p key={index}>{renderStoryText(paragraph)}</p>)}
+            {storyDraft.quote && <blockquote>{storyDraft.quote}</blockquote>}
+          </div>
+        ) : <p>{storyDraft.body}</p>}
       </article>
+      <section className={`story-review-card ${reviewed ? "reviewed" : ""}`} aria-label="确认故事内容">
+        <span className="story-review-label"><Icon name={reviewed ? "check" : "spark"} />由你来确认</span>
+        <h3>这段故事接近你想表达的吗？</h3>
+        <p>有什么需要补充或调整的？</p>
+        {reviewed && !reviewMode ? (
+          <div className="story-review-complete">
+            <strong><Icon name="check" />已确认这版故事</strong>
+            {reviewNote && <p><span>你的补充与调整</span>{reviewNote}</p>}
+            <button type="button" onClick={() => setReviewMode(true)}>继续调整</button>
+          </div>
+        ) : reviewMode ? (
+          <div className="story-review-editor">
+            <textarea
+              value={reviewNote}
+              onChange={(event) => setReviewNote(event.target.value)}
+              placeholder="例如：我学的不只是开关电脑，还练了五笔输入。"
+              aria-label="补充或调整故事"
+            />
+            <div>
+              <button type="button" className="review-cancel" onClick={() => setReviewMode(false)}>暂不修改</button>
+              <button type="button" className="review-save" onClick={saveReviewNote}>保存补充</button>
+            </div>
+          </div>
+        ) : (
+          <div className="story-review-actions">
+            <button type="button" className="review-accept" onClick={acceptStory}><Icon name="check" />没有，可以了</button>
+            <button type="button" className="review-adjust" onClick={() => setReviewMode(true)}>我想补充或调整</button>
+          </div>
+        )}
+      </section>
       <article className="evidence-card">
         <p className="label">你的价值证据</p>
-        <h3>{topic.title}</h3>
-        <p>{topic.detail}</p>
+        <h3>{storyDraft.valueTitle || topic.title}</h3>
+        <p>{storyDraft.valueDetail || topic.detail}</p>
         <div className="audio-strip">
           <button className="play-button" onClick={toggleAudio} aria-label={playing ? "暂停原声" : "播放原声"}><Icon name={playing ? "pause" : "play"} /></button>
           <Waveform active={playing} bars={18} />
@@ -603,8 +672,8 @@ function ResultScreen({ topic, storyDraft, coverKey, StoryCoverArt, motion, audi
         {audioUrl && <audio ref={audioRef} src={audioUrl} onEnded={() => setPlaying(false)}></audio>}
       </article>
       <div className="result-actions">
-        <button className="primary-button" onClick={onConfirm}>生成分享卡</button>
-        <button className="result-outline-button" onClick={onAddGarden}><Icon name="garden" />加入我的花海</button>
+        <button className="primary-button" disabled={!reviewed} onClick={onConfirm}>{reviewed ? "生成分享卡" : "确认故事后生成分享卡"}</button>
+        <button className="result-outline-button" disabled={!reviewed} onClick={onAddGarden}><Icon name="garden" />加入我的花海</button>
         <button className="quiet-action" onClick={onBack}>有一点不像，回去修改</button>
       </div>
     </section>
@@ -668,9 +737,16 @@ function App() {
   const [storyAdded, setStoryAdded] = useState(false);
   const [selectedStory, setSelectedStory] = useState(COMMUNITY_STORIES[0]);
   const [profilePersonId, setProfilePersonId] = useState("aqin");
-  const topic = TOPICS[topicKey];
   const promptBatch = QUESTION_BATCHES[promptBatchIndex];
   const selectedPrompt = QUESTION_BATCHES.flat().find((prompt) => prompt.id === selectedPromptId) || promptBatch[0];
+  const activeStory = STORY_BY_PROMPT[selectedPromptId] || null;
+  const baseTopic = TOPICS[topicKey];
+  const topic = activeStory ? {
+    ...baseTopic,
+    title: activeStory.title,
+    detail: activeStory.subtitle,
+    qualities: activeStory.tags
+  } : baseTopic;
   const palette = topic.palette || tweaks.palette;
   const activePalette = tweaks.palette;
   const currentStory = useMemo(() => ({
@@ -740,7 +816,7 @@ function App() {
   };
 
   const start = () => {
-    setQuestions([DEMO_STORY_SLOT.questions[0] || selectedPrompt.question]);
+    setQuestions([activeStory?.interview.questions[0] || selectedPrompt.question]);
     setAnswers([""]);
     setQuestionIndex(0);
     navigateTo("interview");
@@ -766,7 +842,11 @@ function App() {
       finishInterview();
       return;
     }
-    const followUp = DEMO_STORY_SLOT.questions[questionIndex + 1] || buildFollowUp(answer, questionIndex + 1);
+    if (activeStory && questionIndex >= activeStory.interview.questions.length - 1) {
+      finishInterview();
+      return;
+    }
+    const followUp = activeStory?.interview.questions[questionIndex + 1] || buildFollowUp(answer, questionIndex + 1);
     setQuestions((previous) => [...previous.slice(0, questionIndex + 1), followUp]);
     setAnswers((previous) => [...previous.slice(0, questionIndex + 1), ""]);
     setQuestionIndex((value) => value + 1);
@@ -814,7 +894,7 @@ function App() {
   const restart = () => {
     navigateTo("home");
     setQuestionIndex(0);
-    setQuestions([DEMO_STORY_SLOT.questions[0] || selectedPrompt.question]);
+    setQuestions([activeStory?.interview.questions[0] || selectedPrompt.question]);
     setAnswers([""]);
   };
 
@@ -831,9 +911,9 @@ function App() {
       <AmbientBranch className="right" palette={palette} />
 
       <section className="pitch-copy" aria-label="产品介绍">
-        <p className="eyebrow">木兰 · 女性劳动者价值显影计划</p>
-        <h1>让她做成的事，<em>被看见</em></h1>
-        <p className="lead">AI不替你定义价值。它陪你回到一个真实瞬间，看见自己当时如何观察、判断并把事情做成。</p>
+        <p className="eyebrow">木兰</p>
+        <h1>让她看见自己，<br /><em>也让世界看见她。</em></h1>
+        <p className="lead">一款发现和展示流动女工<br />真实生活和智慧的AI产品。</p>
         <div className="flow-rail">
           {FLOW.map((item, index) => (
             <div className="flow-item" key={item}>
@@ -867,11 +947,12 @@ function App() {
                 audioUrl={audioUrl}
                 setAudioUrl={setAudioUrl}
                 showToast={showToast}
+                story={activeStory}
               />
             )}
             {screen === "revealing" && <RevealScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "result" && <ResultScreen topic={topic} storyDraft={DEMO_STORY_SLOT.result} coverKey={TOPIC_COVERS[topicKey]} StoryCoverArt={StoryCoverArt} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
-            {screen === "share" && <ShareCardScreen topic={topic} coverKey={TOPIC_COVERS[topicKey]} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Waveform={Waveform} showToast={showToast} motion={tweaks.motion} />}
+            {screen === "result" && <ResultScreen topic={topic} storyDraft={activeStory || DEFAULT_STORY_DRAFT.result} coverKey={activeStory?.cover || TOPIC_COVERS[topicKey]} StoryCoverArt={StoryCoverArt} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
+            {screen === "share" && <ShareCardScreen topic={topic} coverKey={activeStory?.cover || TOPIC_COVERS[topicKey]} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Waveform={Waveform} showToast={showToast} motion={tweaks.motion} />}
             {screen === "garden" && <GardenScreen person={myProfile} isMine currentStory={currentStory} onOpenStory={openStory} onNavigate={navigate} onCreate={beginStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => navigateBack("discover")} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}
             {screen === "profile" && <GardenScreen person={COMMUNITY_PEOPLE[profilePersonId]} isMine={false} onBack={() => navigateBack("discover")} onOpenStory={openStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}

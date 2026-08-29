@@ -126,7 +126,7 @@ textarea:focus-visible {
   margin: 0;
   max-width: 9em;
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(46px, 5.1vw, 76px);
+  font-size: clamp(38px, 3.5vw, 46px);
   font-weight: 700;
   line-height: 1.17;
   letter-spacing: -0.045em;
@@ -634,10 +634,11 @@ textarea:focus-visible {
 }
 
 .listening-flower {
-  height: 148px;
+  height: 184px;
   display: grid;
   place-items: center;
   position: relative;
+  margin: 14px 0 18px;
 }
 
 .listening-rings {
@@ -776,6 +777,10 @@ textarea:focus-visible {
 
 .voice-turn.processing {
   background: color-mix(in srgb, var(--petal) 17%, white);
+}
+
+.voice-interview-screen {
+  overflow-y: auto;
 }
 
 .voice-turn .waveform {
@@ -974,6 +979,179 @@ textarea:focus-visible {
   color: #806a65;
   font-size: 12px;
   line-height: 1.7;
+}
+
+.story-draft-card .story-draft-subtitle {
+  margin-top: 8px;
+  color: #654c48;
+  font-family: "Noto Serif SC", serif;
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.story-draft-body {
+  margin-top: 13px;
+}
+
+.story-draft-body p {
+  margin: 0 0 11px;
+  line-height: 1.85;
+}
+
+.story-draft-body strong {
+  color: #49312f;
+  font-weight: 700;
+}
+
+.story-draft-body blockquote {
+  margin: 14px 0 0;
+  padding: 13px 0 13px 14px;
+  border-left: 3px solid var(--accent);
+  color: #49312f;
+  font-family: "Noto Serif SC", serif;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.story-review-card {
+  margin-bottom: 10px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 23%, transparent);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--petal) 13%, rgba(255, 255, 255, 0.78));
+  box-shadow: 0 10px 26px rgba(79, 48, 44, 0.06);
+}
+
+.story-review-card.reviewed {
+  border-color: color-mix(in srgb, var(--leaf) 28%, transparent);
+  background: color-mix(in srgb, var(--leaf) 7%, rgba(255, 255, 255, 0.82));
+}
+
+.story-review-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.story-review-label svg,
+.story-review-complete strong svg,
+.review-accept svg {
+  width: 14px;
+  height: 14px;
+}
+
+.story-review-card h3 {
+  margin: 8px 0 0;
+  color: #49312f;
+  font-family: "Noto Serif SC", serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.story-review-card > p {
+  margin: 4px 0 0;
+  color: #806a65;
+  font-size: 12px;
+}
+
+.story-review-actions {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.story-review-actions button,
+.story-review-editor button {
+  min-height: 44px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-accept,
+.review-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  color: #fff;
+  background: var(--accent);
+}
+
+.review-adjust,
+.review-cancel {
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.story-review-editor {
+  margin-top: 13px;
+}
+
+.story-review-editor textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 12px 13px;
+  border: 1px solid rgba(102, 64, 60, 0.16);
+  border-radius: 16px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.76);
+  line-height: 1.65;
+}
+
+.story-review-editor > div {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.story-review-complete {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.story-review-complete strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--leaf);
+  font-size: 12px;
+}
+
+.story-review-complete p {
+  margin: 9px 0 0;
+  color: #66514d;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.story-review-complete p span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.story-review-complete button {
+  margin-top: 9px;
+  padding: 0;
+  border: 0;
+  color: var(--accent);
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 .result-flower-zone {

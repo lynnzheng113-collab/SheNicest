@@ -1,5 +1,50 @@
 (() => {
+const AQIN_LEARNING_STORY = {
+  id: "aqin-computer-class",
+  personId: "aqin",
+  name: "阿琴",
+  initials: "琴",
+  title: "阿琴，从车间走进办公室",
+  label: "阿琴的故事",
+  badge: "演示案例",
+  subtitle: "那堂花了200块钱的电脑课，让她在机会到来之前，先为自己做好了准备。",
+  excerpt: "她没有准确预测未来，只是在机会出现以前，先让自己多了一种选择。",
+  evidence: "在手表厂车间工作时，阿琴留意到身边谈论计算机的人越来越多。虽然眼前的工作用不上电脑，她仍花了200块去学习。后来办公室需要会电脑的人，这份提前的准备让她得到了一次调岗机会。",
+  quote: "不用等到一切都看清楚了才开始。看到周围正在发生变化，可以先去了解、试一试。学到自己身上的东西不会白费。机会来的时候，你才有得选。",
+  paragraphs: [
+    "刚开始被问起最有帮助的一次学习经历，阿琴觉得没有什么特别值得讲的。",
+    "那时候，她在手表厂车间上班。听说外面有人教计算机，她花了200块钱，给自己报了一门课。",
+    "没有人要求她学，眼前的工作也用不上电脑。她更不知道，这次学习以后会给自己带来什么。她只是留意到，身边谈论计算机的人越来越多。她隐约感觉，这个新东西不会只流行一阵子，以后使用电脑的人可能会越来越多。",
+    "“我也没想那么远，”阿琴说，“就是觉得，既然是新的东西，早一点学总没坏处。”",
+    "后来，厂里的办公室需要一名会使用电脑的人。因为阿琴提前学过，她得到了一次从车间调到办公室的机会。",
+    "直到把这段经历重新讲了一遍，她才意识到：那200块钱买到的不只是一门计算机课程，也不只是一张从车间走进办公室的入场券。",
+    "在机会还没有出现的时候，她已经注意到时代正在变化；在不知道学习会有什么回报的时候，她仍然愿意拿出钱和时间，为自己增加一种新的可能。",
+    "她没有准确预测未来，但她做了一件更实际的事——**先让自己做好准备。**",
+    "如果把这段经历分享给今天同样面对新技术、却不知道“学了有什么用”的人，阿琴的经验是："
+  ],
+  tags: ["变化觉察", "主动学习", "机会准备", "经验传递"],
+  valueTitle: "你没有预知机会，而是在变化出现时先为自己多准备了一种选择",
+  valueDetail: "你留意到计算机正在被更多人谈论，在眼前还用不上时投入200块和时间去学习；后来，这份准备让你接住了从车间调到办公室的机会。",
+  height: "tall",
+  cover: "blueprint",
+  interview: {
+    questions: [
+      "你觉得最有帮助的一次学习经历是什么？",
+      "那时候你每天在车间工作，电脑还不是你必须会的东西。你为什么愿意先花200块去学？",
+      "所以当时你并不知道办公室以后会缺人，只是先让自己学会了一点。后来，是什么让这次学习真正派上了用场？",
+      "如果现在有人也遇到一种新东西，不知道学了马上有没有用，你会怎么提醒她？"
+    ],
+    demoAnswers: [
+      "也没什么特别的。那时候我在手表厂车间上班，外面刚好有人教电脑，我就花了200块去学。后来厂里办公室需要人，我会一点电脑，就过去了。",
+      "当时总听人说起电脑，感觉以后用电脑的人会越来越多。我也不知道具体有什么用，就是觉得这个新东西，早一点学总没坏处。",
+      "后来办公室需要会电脑的人，我正好学过，就有机会从车间调过去。现在想想，要是等到机会来了再学，可能就赶不上了。",
+      "不用一开始就把以后想得很清楚。看到周围正在发生变化，可以先去了解、试一试。学到自己身上的东西不会白费，机会来的时候，你才有得选。"
+    ]
+  }
+};
+
 const COMMUNITY_STORIES = [
+  AQIN_LEARNING_STORY,
   {
     id: "drawing-cabinet",
     personId: "aqin",
@@ -179,6 +224,14 @@ function StoryCoverVisual({ story, compact = false }) {
   );
 }
 
+function renderStoryText(text) {
+  return String(text || "").split(/(\*\*.*?\*\*)/g).filter(Boolean).map((part, index) => (
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>
+      : <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>
+  ));
+}
+
 function DiscoverScreen({ onOpenStory, onOpenProfile, onNavigate, onCreate, Icon, motion }) {
   return (
     <section className="screen discover-screen" data-screen-label="故事瀑布流" data-motion={motion}>
@@ -225,8 +278,13 @@ function StoryDetailScreen({ story, onBack, onOpenProfile, ScreenTop, Icon, Wave
         <article className="detail-evidence">
           <p className="label">这件事里，她看见了</p>
           <h2>{story.title}</h2>
+          {story.subtitle && <p className="story-subtitle">{story.subtitle}</p>}
           <div className="story-tags">{story.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-          <p className="story-body">{story.evidence}</p>
+          {story.paragraphs ? (
+            <div className="story-body story-body-full">
+              {story.paragraphs.map((paragraph, index) => <p key={index}>{renderStoryText(paragraph)}</p>)}
+            </div>
+          ) : <p className="story-body">{story.evidence}</p>}
           <blockquote>{story.quote}</blockquote>
           <button className="detail-audio" onClick={play}>
             <span className="detail-play"><Icon name={playing ? "pause" : "play"} /></span>
@@ -352,7 +410,7 @@ async function buildShareImage(topic, coverKey) {
   context.beginPath(); context.moveTo(96, 1300); context.lineTo(984, 1300); context.stroke();
   context.fillStyle = "#8f1d2c";
   context.font = "600 30px 'Noto Serif SC', serif";
-  context.fillText("木兰 · 让她做成的事，被看见。", 96, 1350);
+  context.fillText("木兰 · 让她看见自己，也让世界看见她。", 96, 1350);
   return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
 }
 
@@ -381,7 +439,7 @@ function ShareCardScreen({ topic, coverKey, onBack, onAddGarden, ScreenTop, Icon
     try {
       const file = await makeFile();
       if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-        await navigator.share({ title: "这是我的故事", text: "让她做成的事，被看见。", files: [file] });
+        await navigator.share({ title: "这是我的故事", text: "让她看见自己，也让世界看见她。", files: [file] });
         return;
       }
       const url = URL.createObjectURL(file);
@@ -403,7 +461,7 @@ function ShareCardScreen({ topic, coverKey, onBack, onAddGarden, ScreenTop, Icon
           <div className="story-tags">{topic.qualities.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
           <p>{topic.detail}</p>
           <div className="share-audio"><Icon name="play" /><Waveform bars={15} /><span>我的原声</span></div>
-          <footer><span className="share-logo">木</span><strong>木兰</strong><span>让她做成的事，被看见。</span></footer>
+          <footer><span className="share-logo">木</span><strong>木兰</strong><span>让她看见自己，也让世界看见她。</span></footer>
         </article>
         <div className="share-actions">
           <button className="outline-button" onClick={save} disabled={saving}><Icon name="save" />{saving ? "正在生成" : "保存图片"}</button>
@@ -417,6 +475,7 @@ function ShareCardScreen({ topic, coverKey, onBack, onAddGarden, ScreenTop, Icon
 }
 
 window.MulanCommunity = {
+  AQIN_LEARNING_STORY,
   COMMUNITY_STORIES,
   COMMUNITY_PEOPLE,
   StoryCoverArt,

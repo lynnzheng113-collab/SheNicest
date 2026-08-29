@@ -244,7 +244,7 @@ function StoryDetailScreen({ story, onBack, onOpenProfile, ScreenTop, Icon, Wave
 }
 
 const GARDEN_POSITIONS = [
-  [8, 27, 116], [59, 21, 132], [31, 43, 126], [67, 48, 110], [5, 61, 108], [49, 67, 128]
+  [4, 18, 92], [57, 15, 104], [24, 38, 88], [63, 42, 96], [3, 59, 90], [47, 61, 106]
 ];
 
 function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNavigate, onCreate, ScreenTop, Icon, Magnolia, palette, glow, motion }) {
@@ -265,7 +265,13 @@ function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNav
         {displayStories.map((story, index) => {
           const [left, top, size] = GARDEN_POSITIONS[index];
           return (
-            <button className={`garden-bloom bloom-${index + 1}`} key={`${story.id}-${index}`} style={{ left: `${left}%`, top: `${top}%` }} onClick={() => onOpenStory(story)}>
+            <button
+              className={`garden-bloom bloom-${index + 1}`}
+              key={`${story.id}-${index}`}
+              style={{ left: `${left}%`, top: `${top}%`, "--story-flower-size": `${size}px` }}
+              aria-label={`打开${story.tags[0]}的故事`}
+              onClick={() => onOpenStory(story)}
+            >
               <Magnolia bloom={0.86 + index * 0.025} size={size} palette={palette} glow={glow && index === 0} id={`garden-${story.id}-${index}`} />
               <span>{story.tags[0]}</span>
             </button>

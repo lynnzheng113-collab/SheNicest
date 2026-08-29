@@ -416,7 +416,7 @@
   border: 1px solid rgba(109, 91, 65, 0.16);
   border-radius: 28px;
   background-color: #dfd4ba;
-  background-image: url("assets/garden-magnolia-tree-v1.png");
+  background-image: url("assets/garden-magnolia-tree-background-v2.png");
   background-position: center 48%;
   background-size: cover;
   box-shadow:
@@ -458,61 +458,84 @@
 .garden-bloom {
   position: absolute;
   z-index: 3;
-  width: 116px;
-  height: 58px;
+  width: calc(var(--story-flower-size) + 30px);
+  height: calc(var(--story-flower-size) * 1.18 + 35px);
   padding: 0;
   border: 0;
   color: #533e39;
   background: transparent;
   cursor: pointer;
-  transition: transform 180ms ease, filter 180ms ease;
+  transform-origin: 50% 82%;
+  transition: transform 220ms ease, filter 220ms ease;
 }
 
 .garden-bloom .magnolia-photo {
   position: absolute;
-  width: 34px !important;
-  height: 42px !important;
-  right: 5px;
-  bottom: 0;
-  left: auto;
-  opacity: 0;
+  z-index: 2;
+  top: 0;
+  left: 50%;
+  width: var(--story-flower-size) !important;
+  height: calc(var(--story-flower-size) * 1.08) !important;
+  opacity: 1;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
+.garden-bloom .magnolia-photo::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 10% 3% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 249, 236, 0.82), rgba(255, 242, 220, 0.32) 48%, transparent 72%);
+  filter: blur(7px);
+}
+
+.garden-bloom .magnolia-photo img {
+  filter:
+    drop-shadow(0 0 7px rgba(255, 248, 232, 0.96))
+    drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28));
+}
+
+.garden-bloom.bloom-2 .magnolia-photo { transform: translateX(-50%) scaleX(-1) rotate(4deg); }
+.garden-bloom.bloom-3 .magnolia-photo { transform: translateX(-50%) rotate(-6deg) scale(0.94); }
+.garden-bloom.bloom-4 .magnolia-photo { transform: translateX(-50%) scaleX(-1) rotate(-3deg) scale(0.92); }
+.garden-bloom.bloom-5 .magnolia-photo { transform: translateX(-50%) rotate(7deg) scale(0.9); }
+.garden-bloom.bloom-6 .magnolia-photo { transform: translateX(-50%) scaleX(-1) rotate(3deg) scale(1.03); }
+
+.garden-bloom.bloom-2 .magnolia-photo img { filter: saturate(0.88) brightness(1.06) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
+.garden-bloom.bloom-3 .magnolia-photo img { filter: saturate(1.08) sepia(0.05) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
+.garden-bloom.bloom-5 .magnolia-photo img { filter: saturate(0.82) brightness(1.08) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
+
 .garden-bloom > span {
   position: absolute;
-  z-index: 3;
-  top: 0;
-  left: 4px;
+  z-index: 4;
+  bottom: 1px;
+  left: 50%;
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 32px;
-  padding: 6px 10px 6px 8px;
+  min-height: 28px;
+  padding: 5px 10px;
   border: 1px solid rgba(117, 77, 61, 0.2);
   border-radius: 99px;
-  background: rgba(255, 250, 244, 0.88);
+  background: rgba(255, 251, 246, 0.92);
   box-shadow: 0 5px 14px rgba(60, 44, 35, 0.14);
   backdrop-filter: blur(10px);
   font-size: 9px;
   font-weight: 600;
   white-space: nowrap;
+  transform: translateX(-50%);
 }
 
 .garden-bloom > span::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  flex: 0 0 auto;
-  border: 2px solid rgba(255, 250, 244, 0.9);
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 1px rgba(143, 29, 44, 0.22), 0 0 12px rgba(255, 236, 206, 0.8);
+  content: "✦";
+  color: var(--accent);
+  font-size: 8px;
 }
 
-.garden-bloom:nth-of-type(even) > span { left: auto; right: 4px; }
 .garden-bloom:hover,
-.garden-bloom:focus-visible { z-index: 6; transform: translateY(-3px); filter: brightness(1.04); }
+.garden-bloom:focus-visible { z-index: 6; transform: translateY(-5px) scale(1.025); filter: brightness(1.04); }
 .garden-bloom:focus-visible { outline: 2px solid rgba(255, 250, 244, 0.95); outline-offset: 2px; border-radius: 18px; }
 
 .garden-ground-copy {

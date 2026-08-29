@@ -340,14 +340,14 @@ textarea:focus-visible {
 }
 
 .home-copy {
-  margin-top: 38px;
+  margin-top: 24px;
   text-align: center;
 }
 
 .home-copy h2 {
   margin: 0;
   font-family: "Noto Serif SC", serif;
-  font-size: 35px;
+  font-size: 31px;
   line-height: 1.35;
   letter-spacing: -0.035em;
 }
@@ -360,7 +360,7 @@ textarea:focus-visible {
 }
 
 .home-flower {
-  min-height: 230px;
+  min-height: 166px;
   display: grid;
   place-items: center;
   margin-top: 4px;
@@ -372,7 +372,7 @@ textarea:focus-visible {
   position: absolute;
   width: 180px;
   height: 22px;
-  bottom: 14px;
+  bottom: 8px;
   border-radius: 50%;
   background: rgba(111, 73, 69, 0.1);
   filter: blur(12px);
@@ -380,6 +380,33 @@ textarea:focus-visible {
 
 .home-flower .magnolia-photo {
   z-index: 1;
+}
+
+.question-toolbar {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.shuffle-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 999px;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.58);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.shuffle-button:hover {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .topic-grid {
@@ -390,9 +417,9 @@ textarea:focus-visible {
 }
 
 .topic-card {
-  min-height: 62px;
+  min-height: 76px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 12px;
   border: 1px solid rgba(113, 73, 70, 0.12);
@@ -424,6 +451,8 @@ textarea:focus-visible {
 .topic-card span {
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.45;
+  text-align: left;
 }
 
 .primary-button,

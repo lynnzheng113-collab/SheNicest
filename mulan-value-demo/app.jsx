@@ -92,6 +92,27 @@ const TOPICS = {
   }
 };
 
+const QUESTION_BATCHES = [
+  [
+    { id: "thanks", topicKey: "influence", icon: "heart", question: "最近一年，你做的哪件事收到了感谢？" },
+    { id: "work", topicKey: "craft", icon: "briefcase", question: "你的工作内容是什么？" },
+    { id: "cooking", topicKey: "style", icon: "palette", question: "你做的哪道菜被家人朋友夸奖好吃？" },
+    { id: "help", topicKey: "influence", icon: "people", question: "最近收到的一次求助是针对哪件事？" }
+  ],
+  [
+    { id: "solve", topicKey: "craft", icon: "spark", question: "最近一次你把麻烦解决掉，是什么事？" },
+    { id: "rely", topicKey: "influence", icon: "people", question: "最近有人说“还好有你”，是因为什么？" },
+    { id: "family", topicKey: "body", icon: "heart", question: "家里有哪件事，大家总会想到让你来做？" },
+    { id: "learn", topicKey: "craft", icon: "briefcase", question: "最近学会的一件新事，你是怎么学会的？" }
+  ],
+  [
+    { id: "better", topicKey: "craft", icon: "spark", question: "最近哪件事，你比以前做得更快更好了？" },
+    { id: "care", topicKey: "body", icon: "heart", question: "你照顾过谁？当时最需要留意什么？" },
+    { id: "repair", topicKey: "craft", icon: "briefcase", question: "有什么东西坏了或不顺手，被你想办法弄好了？" },
+    { id: "teach", topicKey: "influence", icon: "people", question: "最近你教会别人做的一件事是什么？" }
+  ]
+];
+
 const FLOW = ["选择一件小事", "讲清怎么做到", "生成故事价值卡", "汇入个人花海"];
 const TOPIC_COVERS = { craft: "blueprint", body: "running", style: "style", influence: "teaching" };
 const ROUTE_SCREENS = new Set(["discover", "home", "interview", "revealing", "result", "share", "garden", "detail", "profile", "sea"]);
@@ -244,7 +265,7 @@ function ScreenTop({ title, onBack, action }) {
   );
 }
 
-function HomeScreen({ selected, setSelected, onStart, onBack, palette, glow, motion }) {
+function HomeScreen({ prompts, selectedPromptId, onSelectPrompt, onChangeBatch, onStart, onBack, palette, glow, motion }) {
   return (
     <section className="screen home-screen" data-screen-label="01 首页" data-motion={motion}>
       <div className="home-nav">
@@ -259,23 +280,30 @@ function HomeScreen({ selected, setSelected, onStart, onBack, palette, glow, mot
         <span></span>
       </div>
       <div className="home-copy">
-        <h2>讲出一件<br />你做成的小事</h2>
-        <p>每一件做成的小事，<br />都藏着你的力量</p>
+        <h2>从一个具体问题<br />开始说说自己</h2>
+        <p>没有标准答案，<br />选一个你最有感觉的问题</p>
       </div>
       <div className="home-flower">
-        <Magnolia bloom={0.22} size={190} palette={palette} glow={glow} id="home" />
+        <Magnolia bloom={0.22} size={158} palette={palette} glow={glow} id="home" />
       </div>
-      <div className="topic-grid" role="radiogroup" aria-label="选择讲述主题">
-        {Object.entries(TOPICS).map(([key, topic]) => (
+      <div className="question-toolbar">
+        <span>想从哪件事说起？</span>
+        <button className="shuffle-button" type="button" onClick={onChangeBatch}>
+          <Icon name="reset" size={15} />
+          <span>换一批</span>
+        </button>
+      </div>
+      <div className="topic-grid" role="radiogroup" aria-label="选择一个具体问题">
+        {prompts.map((prompt) => (
           <button
-            key={key}
-            className={`topic-card ${selected === key ? "selected" : ""}`}
-            onClick={() => setSelected(key)}
+            key={prompt.id}
+            className={`topic-card ${selectedPromptId === prompt.id ? "selected" : ""}`}
+            onClick={() => onSelectPrompt(prompt)}
             role="radio"
-            aria-checked={selected === key}
+            aria-checked={selectedPromptId === prompt.id}
           >
-            <Icon name={topic.icon} />
-            <span>{topic.label}</span>
+            <Icon name={prompt.icon} />
+            <span>{prompt.question}</span>
           </button>
         ))}
       </div>
@@ -595,9 +623,11 @@ function FlowerSeaScreen({ topic, palette, glow, motion, onRestart, seaCount }) 
 function App() {
   const [tweaks, setTweak] = useTweaks(window.TWEAK_DEFAULTS);
   const [screen, setScreen] = useState(getInitialScreen);
-  const [topicKey, setTopicKey] = useState("craft");
+  const [topicKey, setTopicKey] = useState(QUESTION_BATCHES[0][0].topicKey);
+  const [promptBatchIndex, setPromptBatchIndex] = useState(0);
+  const [selectedPromptId, setSelectedPromptId] = useState(QUESTION_BATCHES[0][0].id);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [questions, setQuestions] = useState([TOPICS.craft.questions[0]]);
+  const [questions, setQuestions] = useState([QUESTION_BATCHES[0][0].question]);
   const [answers, setAnswers] = useState([""]);
   const [audioUrl, setAudioUrl] = useState("");
   const [toast, setToast] = useState("");
@@ -606,6 +636,8 @@ function App() {
   const [selectedStory, setSelectedStory] = useState(COMMUNITY_STORIES[0]);
   const [profilePersonId, setProfilePersonId] = useState("aqin");
   const topic = TOPICS[topicKey];
+  const promptBatch = QUESTION_BATCHES[promptBatchIndex];
+  const selectedPrompt = QUESTION_BATCHES.flat().find((prompt) => prompt.id === selectedPromptId) || promptBatch[0];
   const palette = topic.palette || tweaks.palette;
   const activePalette = tweaks.palette;
   const currentStory = useMemo(() => ({
@@ -675,10 +707,23 @@ function App() {
   };
 
   const start = () => {
-    setQuestions([TOPICS[topicKey].questions[0]]);
+    setQuestions([selectedPrompt.question]);
     setAnswers([""]);
     setQuestionIndex(0);
     navigateTo("interview");
+  };
+
+  const selectPrompt = (prompt) => {
+    setSelectedPromptId(prompt.id);
+    setTopicKey(prompt.topicKey);
+  };
+
+  const changePromptBatch = () => {
+    const nextIndex = (promptBatchIndex + 1) % QUESTION_BATCHES.length;
+    const nextPrompt = QUESTION_BATCHES[nextIndex][0];
+    setPromptBatchIndex(nextIndex);
+    setSelectedPromptId(nextPrompt.id);
+    setTopicKey(nextPrompt.topicKey);
   };
 
   const nextQuestion = (spokenAnswer) => {
@@ -736,7 +781,7 @@ function App() {
   const restart = () => {
     navigateTo("home");
     setQuestionIndex(0);
-    setQuestions([TOPICS[topicKey].questions[0]]);
+    setQuestions([selectedPrompt.question]);
     setAnswers([""]);
   };
 
@@ -772,7 +817,7 @@ function App() {
           <div className="app-viewport">
             <StatusBar />
             {screen === "discover" && <DiscoverScreen onOpenStory={openStory} onOpenProfile={openProfile} onNavigate={navigate} onCreate={beginStory} Icon={Icon} Magnolia={Magnolia} palette={palette} motion={tweaks.motion} />}
-            {screen === "home" && <HomeScreen selected={topicKey} setSelected={setTopicKey} onStart={start} onBack={() => navigateBack("discover")} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
+            {screen === "home" && <HomeScreen prompts={promptBatch} selectedPromptId={selectedPromptId} onSelectPrompt={selectPrompt} onChangeBatch={changePromptBatch} onStart={start} onBack={() => navigateBack("discover")} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "interview" && (
               <InterviewScreen
                 topicKey={topicKey}

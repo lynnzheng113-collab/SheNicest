@@ -183,8 +183,8 @@ function DiscoverScreen({ onOpenStory, onOpenProfile, onNavigate, onCreate, Icon
   return (
     <section className="screen discover-screen" data-screen-label="故事瀑布流" data-motion={motion}>
       <header className="discover-header">
-        <p className="brand-kicker">雁过有声</p>
-        <div className="discover-title-row"><div><h2>听见她们</h2><p>每一件做成的小事，都值得被看见</p></div><span className="brand-mark">雁</span></div>
+        <p className="brand-kicker">木兰</p>
+        <div className="discover-title-row"><div><h2>听见她们</h2><p>每一件做成的小事，都值得被看见</p></div><span className="brand-mark">木</span></div>
       </header>
       <div className="discover-scroll">
         <div className="story-masonry">
@@ -356,7 +356,7 @@ async function buildShareImage(topic, coverKey) {
   context.beginPath(); context.moveTo(96, 1300); context.lineTo(984, 1300); context.stroke();
   context.fillStyle = "#8f1d2c";
   context.font = "600 30px 'Noto Serif SC', serif";
-  context.fillText("雁过有声 · 让她做成的事，被看见。", 96, 1350);
+  context.fillText("木兰 · 让她做成的事，被看见。", 96, 1350);
   return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
 }
 
@@ -407,7 +407,7 @@ function ShareCardScreen({ topic, coverKey, onBack, onAddGarden, ScreenTop, Icon
           <div className="story-tags">{topic.qualities.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
           <p>{topic.detail}</p>
           <div className="share-audio"><Icon name="play" /><Waveform bars={15} /><span>我的原声</span></div>
-          <footer><span className="share-logo">雁</span><strong>雁过有声</strong><span>让她做成的事，被看见。</span></footer>
+          <footer><span className="share-logo">木</span><strong>木兰</strong><span>让她做成的事，被看见。</span></footer>
         </article>
         <div className="share-actions">
           <button className="outline-button" onClick={save} disabled={saving}><Icon name="save" />{saving ? "正在生成" : "保存图片"}</button>

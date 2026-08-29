@@ -254,7 +254,7 @@ function HomeScreen({ selected, setSelected, onStart, onBack, palette, glow, mot
             <path d="M20 32C7 27 8 12 20 5c12 7 13 22 0 27Z" fill={palette[2]} stroke={palette[0]} />
             <path d="M20 31V13" stroke={palette[0]} strokeWidth="1.8" />
           </svg>
-          <span>雁过有声</span>
+          <span>木兰</span>
         </div>
         <span></span>
       </div>
@@ -753,7 +753,7 @@ function App() {
       <AmbientBranch className="right" palette={palette} />
 
       <section className="pitch-copy" aria-label="产品介绍">
-        <p className="eyebrow">雁过有声 · 女性劳动者价值显影计划</p>
+        <p className="eyebrow">木兰 · 女性劳动者价值显影计划</p>
         <h1>让她做成的事，<em>被看见</em></h1>
         <p className="lead">AI不替你定义价值。它陪你回到一个真实瞬间，看见自己当时如何观察、判断并把事情做成。</p>
         <div className="flow-rail">

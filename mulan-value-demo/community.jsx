@@ -244,10 +244,10 @@ function StoryDetailScreen({ story, onBack, onOpenProfile, ScreenTop, Icon, Wave
 }
 
 const GARDEN_POSITIONS = [
-  [4, 18, 92], [57, 15, 104], [24, 38, 88], [63, 42, 96], [3, 59, 90], [47, 61, 106]
+  [12, 16, 88], [44, 19, 94], [32, 26, 82], [5, 33, 86], [58, 30, 90], [68, 49, 96]
 ];
 
-function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNavigate, onCreate, ScreenTop, Icon, palette, glow, motion }) {
+function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNavigate, onCreate, ScreenTop, Icon, motion }) {
   const personStories = isMine
     ? [currentStory, ...OWN_GARDEN_STORIES].filter(Boolean)
     : COMMUNITY_STORIES.filter((story) => story.personId === person.id);
@@ -272,7 +272,7 @@ function GardenScreen({ person, isMine, currentStory, onBack, onOpenStory, onNav
               aria-label={`打开${story.tags[0]}的故事`}
               onClick={() => onOpenStory(story)}
             >
-              <div className={`garden-story-flower ${glow && index === 0 ? "glow" : ""}`} aria-hidden="true">
+              <div className="garden-story-flower" aria-hidden="true">
                 <img src="assets/magnolia-blossom-only-v1.png" alt="" draggable="false" />
               </div>
               <span className="garden-bloom-label">{story.tags[0]}</span>

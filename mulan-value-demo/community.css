@@ -478,17 +478,8 @@
   height: var(--story-flower-size) !important;
   overflow: visible;
   transform: translateX(-50%);
+  transform-origin: 50% 94%;
   pointer-events: none;
-}
-
-.garden-story-flower::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 8% 2% 2%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 249, 236, 0.82), rgba(255, 242, 220, 0.32) 48%, transparent 72%);
-  filter: blur(7px);
 }
 
 .garden-story-flower img {
@@ -498,21 +489,19 @@
   height: 100%;
   max-width: none;
   object-fit: contain;
-  opacity: 0.98;
-  filter:
-    drop-shadow(0 0 7px rgba(255, 248, 232, 0.96))
-    drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28));
+  opacity: 1;
+  filter: none;
 }
 
-.garden-bloom.bloom-2 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(4deg); }
-.garden-bloom.bloom-3 .garden-story-flower { transform: translateX(-50%) rotate(-6deg) scale(0.94); }
-.garden-bloom.bloom-4 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(-3deg) scale(0.92); }
-.garden-bloom.bloom-5 .garden-story-flower { transform: translateX(-50%) rotate(7deg) scale(0.9); }
-.garden-bloom.bloom-6 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(3deg) scale(1.03); }
+.garden-bloom.bloom-2 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(7deg); }
+.garden-bloom.bloom-3 .garden-story-flower { transform: translateX(-50%) rotate(-3deg) scale(0.94); }
+.garden-bloom.bloom-4 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(-8deg) scale(0.92); }
+.garden-bloom.bloom-5 .garden-story-flower { transform: translateX(-50%) rotate(10deg) scale(0.94); }
+.garden-bloom.bloom-6 .garden-story-flower { transform: translateX(-50%) scaleX(-1) rotate(12deg) scale(1.02); }
 
-.garden-bloom.bloom-2 .garden-story-flower img { filter: saturate(0.88) brightness(1.06) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
-.garden-bloom.bloom-3 .garden-story-flower img { filter: saturate(1.08) sepia(0.05) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
-.garden-bloom.bloom-5 .garden-story-flower img { filter: saturate(0.82) brightness(1.08) drop-shadow(0 0 7px rgba(255, 248, 232, 0.96)) drop-shadow(0 8px 8px rgba(71, 47, 36, 0.28)); }
+.garden-bloom.bloom-2 .garden-story-flower img { filter: saturate(0.9) brightness(1.02); }
+.garden-bloom.bloom-3 .garden-story-flower img { filter: saturate(1.05) sepia(0.03); }
+.garden-bloom.bloom-5 .garden-story-flower img { filter: saturate(0.86) brightness(1.03); }
 
 .garden-bloom-label {
   position: absolute;
@@ -542,7 +531,7 @@
 }
 
 .garden-bloom:hover,
-.garden-bloom:focus-visible { z-index: 6; transform: translateY(-5px) scale(1.025); filter: brightness(1.04); }
+.garden-bloom:focus-visible { z-index: 6; transform: translateY(-3px) scale(1.015); }
 .garden-bloom:focus-visible { outline: 2px solid rgba(255, 250, 244, 0.95); outline-offset: 2px; border-radius: 18px; }
 
 .garden-ground-copy {

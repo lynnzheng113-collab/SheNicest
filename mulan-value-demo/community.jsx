@@ -182,10 +182,6 @@ function StoryCoverVisual({ story, compact = false }) {
 function DiscoverScreen({ onOpenStory, onOpenProfile, onNavigate, onCreate, Icon, motion }) {
   return (
     <section className="screen discover-screen" data-screen-label="故事瀑布流" data-motion={motion}>
-      <header className="discover-header">
-        <p className="brand-kicker">木兰</p>
-        <div className="discover-title-row"><div><h2>听见她们</h2><p>每一件做成的小事，都值得被看见</p></div><span className="brand-mark">木</span></div>
-      </header>
       <div className="discover-scroll">
         <div className="story-masonry">
           {COMMUNITY_STORIES.map((story) => (

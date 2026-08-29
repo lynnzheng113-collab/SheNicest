@@ -6,54 +6,6 @@
   background: #fff8f2;
 }
 
-.discover-header {
-  flex: 0 0 auto;
-  padding: 11px 22px 14px;
-  border-bottom: 1px solid rgba(87, 58, 53, 0.08);
-}
-
-.brand-kicker {
-  margin: 0 0 7px;
-  color: var(--accent);
-  font-family: "Noto Serif SC", serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-}
-
-.discover-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.discover-title-row h2 {
-  margin: 0;
-  font-family: "Noto Serif SC", serif;
-  font-size: 25px;
-  line-height: 1.2;
-}
-
-.discover-title-row p {
-  margin: 6px 0 0;
-  color: #846f69;
-  font-size: 11px;
-}
-
-.discover-title-row .brand-mark {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(143, 29, 44, 0.25);
-  border-radius: 50%;
-  color: var(--accent);
-  font-family: "Noto Serif SC", serif;
-  font-size: 15px;
-  font-weight: 700;
-}
-
 .discover-scroll,
 .story-detail-scroll,
 .share-scroll {
@@ -739,8 +691,6 @@
 }
 
 @media (max-height: 735px) and (min-width: 781px) {
-  .discover-header { padding-top: 3px; padding-bottom: 8px; }
-  .discover-title-row h2 { font-size: 21px; }
   .community-nav { height: 70px; padding-bottom: 7px; }
   .discover-scroll { padding-bottom: 88px; }
   .share-card-preview { min-height: 460px; }

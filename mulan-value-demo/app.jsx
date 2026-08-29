@@ -126,7 +126,6 @@ const DEFAULT_STORY_DRAFT = {
   }
 };
 
-const FLOW = ["选择一件小事", "讲清怎么做到", "生成故事价值卡", "汇入个人花海"];
 const TOPIC_COVERS = { craft: "blueprint", body: "running", style: "style", influence: "teaching" };
 const ROUTE_SCREENS = new Set(["discover", "home", "interview", "revealing", "result", "share", "garden", "detail", "profile", "sea"]);
 
@@ -903,26 +902,13 @@ function App() {
     else navigateBack("home");
   };
 
-  const openTweaks = () => window.postMessage({ type: "miaoda:tweaks:activate" }, "*");
-
   return (
     <main className="prototype-shell" style={shellStyle}>
       <AmbientBranch className="left" palette={palette} />
       <AmbientBranch className="right" palette={palette} />
 
-      <section className="pitch-copy" aria-label="产品介绍">
-        <p className="eyebrow">木兰</p>
-        <h1>让她看见自己，<br /><em>也让世界看见她。</em></h1>
-        <p className="lead">一款发现和展示流动女工<br />真实生活和智慧的AI产品。</p>
-        <div className="flow-rail">
-          {FLOW.map((item, index) => (
-            <div className="flow-item" key={item}>
-              <span className="index">0{index + 1}</span>
-              <strong>{item}</strong>
-              <Icon name="next" />
-            </div>
-          ))}
-        </div>
+      <section className="pitch-copy" aria-label="品牌名称">
+        <p className="desktop-brand-name">木兰</p>
       </section>
 
       <div className="phone-stage">
@@ -961,18 +947,8 @@ function App() {
         </div>
       </div>
 
-      <aside className="side-notes" aria-label="设计说明">
-        <article className="side-note">
-          <p className="note-label">签名交互</p>
-          <h3>故事越清楚，木兰开得越完整</h3>
-          <p>每一轮追问不是收集更多字数，而是让一次行动背后的观察、判断与影响逐层显影。</p>
-        </article>
-        <article className="side-note">
-          <p className="note-label">价值输出</p>
-          <h3>一朵花，就是一份可认领的证据</h3>
-          <p>花瓣对应真实故事中出现的能力。用户说“这是我”以后，这朵花才会进入花海。</p>
-        </article>
-        <button className="style-trigger" onClick={openTweaks}><Icon name="tune" /><span>调整视觉风格</span></button>
+      <aside className="side-notes" aria-label="品牌口号">
+        <p className="desktop-slogan">让她看见自己，<br /><em>让世界看见她。</em></p>
       </aside>
 
       <TweaksPanel title="风格">

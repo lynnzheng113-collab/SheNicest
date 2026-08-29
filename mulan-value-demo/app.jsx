@@ -113,6 +113,16 @@ const QUESTION_BATCHES = [
   ]
 ];
 
+// 新故事到位后，只需替换这里：questions 按访谈顺序填写，result 放最终故事。
+const DEMO_STORY_SLOT = {
+  questions: [],
+  result: {
+    title: "故事标题待补充",
+    body: "你稍后提供的完整故事将展示在这里。故事内容确定后，直接替换这段占位文字即可。",
+    isPlaceholder: true
+  }
+};
+
 const FLOW = ["选择一件小事", "讲清怎么做到", "生成故事价值卡", "汇入个人花海"];
 const TOPIC_COVERS = { craft: "blueprint", body: "running", style: "style", influence: "teaching" };
 const ROUTE_SCREENS = new Set(["discover", "home", "interview", "revealing", "result", "share", "garden", "detail", "profile", "sea"]);
@@ -159,6 +169,18 @@ function buildFollowUp(answer, round) {
     `还有哪个细节，是别人没问过、但你觉得很重要的？`
   ];
   return prompts[Math.max(0, round - 1) % prompts.length];
+}
+
+function chooseWarmFemaleVoice(voices) {
+  const chineseVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("zh"));
+  const preferredNames = [
+    "xiaoxiao", "晓晓", "小晓", "xiaoyi", "晓伊", "yaoyao", "瑶瑶",
+    "tingting", "ting-ting", "婷婷", "meijia", "mei-jia", "美佳", "huihui", "慧慧"
+  ];
+  return preferredNames.reduce(
+    (match, name) => match || chineseVoices.find((voice) => voice.name.toLowerCase().includes(name.toLowerCase())),
+    null
+  ) || chineseVoices.find((voice) => /female|natural|女声/i.test(voice.name)) || chineseVoices[0];
 }
 
 function getExampleAnswer(topic, round) {
@@ -356,12 +378,11 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(currentQuestion);
     const voices = window.speechSynthesis.getVoices();
-    const chineseVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith("zh-cn"))
-      || voices.find((voice) => voice.lang.toLowerCase().startsWith("zh"));
-    if (chineseVoice) utterance.voice = chineseVoice;
+    const warmFemaleVoice = chooseWarmFemaleVoice(voices);
+    if (warmFemaleVoice) utterance.voice = warmFemaleVoice;
     utterance.lang = "zh-CN";
-    utterance.rate = 0.92;
-    utterance.pitch = 1.04;
+    utterance.rate = 0.9;
+    utterance.pitch = 1.03;
     utterance.onstart = () => setAgentSpeaking(true);
     utterance.onend = () => setAgentSpeaking(false);
     utterance.onerror = () => setAgentSpeaking(false);
@@ -471,13 +492,17 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
       <div className={`agent-voice-card ${agentSpeaking ? "speaking" : ""}`} aria-label={`木兰的问题：${currentQuestion}`}>
         <div className="agent-voice-orb"><Icon name="volume" /></div>
         <div className="agent-voice-copy">
-          <span>木兰正在陪你聊</span>
+          <span>木兰 · 温暖女声</span>
           <strong>{agentSpeaking ? "正在和你说话…" : "问题已经播放"}</strong>
         </div>
         <button className="replay-question" onClick={speakQuestion} disabled={recording || processing} aria-label="重新播放问题">
           <Icon name="volume" />
           <span>重听</span>
         </button>
+      </div>
+      <div className="question-transcript" aria-live="polite">
+        <span>木兰想问</span>
+        <p>{currentQuestion}</p>
       </div>
       <div className="listening-flower">
         <div className={`listening-rings ${recording || agentSpeaking ? "recording" : ""}`}></div>
@@ -500,8 +525,8 @@ function InterviewScreen({ topicKey, questions, questionIndex, answers, setAnswe
       <div className="interview-next">
         <button className="finish-interview" disabled={answeredRounds === 0 || recording || processing} onClick={onFinish}>
           <Icon name="leaf" />
-          <span>我暂时没什么想说的了</span>
-          <small>看看这件事里的价值</small>
+          <span><strong>我暂时没什么想说的了</strong><small>结束访谈，看看这件事里的价值</small></span>
+          <Icon name="next" />
         </button>
       </div>
     </section>
@@ -519,7 +544,7 @@ function RevealScreen({ topic, palette, glow, motion }) {
   );
 }
 
-function ResultScreen({ topic, coverKey, StoryCoverArt, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
+function ResultScreen({ topic, storyDraft, coverKey, StoryCoverArt, motion, audioUrl, onConfirm, onAddGarden, onBack, showToast }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -558,6 +583,14 @@ function ResultScreen({ topic, coverKey, StoryCoverArt, motion, audioUrl, onConf
           </span>
         ))}
       </div>
+      <article className={`story-draft-card ${storyDraft.isPlaceholder ? "placeholder" : ""}`}>
+        <div className="story-draft-heading">
+          <span>你的故事</span>
+          {storyDraft.isPlaceholder && <small>内容预留</small>}
+        </div>
+        <h3>{storyDraft.title}</h3>
+        <p>{storyDraft.body}</p>
+      </article>
       <article className="evidence-card">
         <p className="label">你的价值证据</p>
         <h3>{topic.title}</h3>
@@ -707,7 +740,7 @@ function App() {
   };
 
   const start = () => {
-    setQuestions([selectedPrompt.question]);
+    setQuestions([DEMO_STORY_SLOT.questions[0] || selectedPrompt.question]);
     setAnswers([""]);
     setQuestionIndex(0);
     navigateTo("interview");
@@ -733,7 +766,7 @@ function App() {
       finishInterview();
       return;
     }
-    const followUp = buildFollowUp(answer, questionIndex + 1);
+    const followUp = DEMO_STORY_SLOT.questions[questionIndex + 1] || buildFollowUp(answer, questionIndex + 1);
     setQuestions((previous) => [...previous.slice(0, questionIndex + 1), followUp]);
     setAnswers((previous) => [...previous.slice(0, questionIndex + 1), ""]);
     setQuestionIndex((value) => value + 1);
@@ -781,7 +814,7 @@ function App() {
   const restart = () => {
     navigateTo("home");
     setQuestionIndex(0);
-    setQuestions([selectedPrompt.question]);
+    setQuestions([DEMO_STORY_SLOT.questions[0] || selectedPrompt.question]);
     setAnswers([""]);
   };
 
@@ -837,7 +870,7 @@ function App() {
               />
             )}
             {screen === "revealing" && <RevealScreen topic={topic} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
-            {screen === "result" && <ResultScreen topic={topic} coverKey={TOPIC_COVERS[topicKey]} StoryCoverArt={StoryCoverArt} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
+            {screen === "result" && <ResultScreen topic={topic} storyDraft={DEMO_STORY_SLOT.result} coverKey={TOPIC_COVERS[topicKey]} StoryCoverArt={StoryCoverArt} motion={tweaks.motion} audioUrl={audioUrl} onConfirm={confirm} onAddGarden={addToGarden} onBack={() => navigateBack("interview")} showToast={showToast} />}
             {screen === "share" && <ShareCardScreen topic={topic} coverKey={TOPIC_COVERS[topicKey]} onBack={() => navigateBack("result")} onAddGarden={addToGarden} ScreenTop={ScreenTop} Icon={Icon} Waveform={Waveform} showToast={showToast} motion={tweaks.motion} />}
             {screen === "garden" && <GardenScreen person={myProfile} isMine currentStory={currentStory} onOpenStory={openStory} onNavigate={navigate} onCreate={beginStory} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} palette={palette} glow={tweaks.petalGlow} motion={tweaks.motion} />}
             {screen === "detail" && <StoryDetailScreen story={selectedStory} onBack={() => navigateBack("discover")} onOpenProfile={openProfile} ScreenTop={ScreenTop} Icon={Icon} Magnolia={Magnolia} Waveform={Waveform} palette={palette} showToast={showToast} motion={tweaks.motion} />}

@@ -182,14 +182,17 @@ textarea:focus-visible {
 }
 
 .phone-stage {
+  width: min(100%, 408px, 44.5dvh);
+  aspect-ratio: 390 / 844;
   display: flex;
   justify-content: center;
+  justify-self: center;
 }
 
 .phone {
-  width: min(100%, 408px);
-  height: min(860px, calc(100dvh - 66px));
-  min-height: 680px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   padding: 9px;
   border: 2px solid rgba(56, 40, 37, 0.82);
   border-radius: 48px;
@@ -1549,11 +1552,6 @@ textarea:focus-visible {
     padding-bottom: 12px;
   }
 
-  .phone {
-    height: calc(100dvh - 24px);
-    min-height: 0;
-  }
-
   .home-screen {
     padding-top: 54px;
     padding-bottom: 18px;
@@ -1621,6 +1619,7 @@ textarea:focus-visible {
   .phone-stage,
   .phone {
     width: 100%;
+    aspect-ratio: auto;
     min-height: 100dvh;
     height: 100dvh;
   }
